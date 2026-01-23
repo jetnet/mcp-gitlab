@@ -196,6 +196,52 @@ export const toolDefinitions = [
     }
   },
   {
+    name: 'gitlab_create_merge_request',
+    description: 'Create a new merge request in a GitLab project',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: {
+          type: 'string',
+          description: 'The ID or URL-encoded path of the project'
+        },
+        source_branch: {
+          type: 'string',
+          description: 'The source branch name'
+        },
+        target_branch: {
+          type: 'string',
+          description: 'The target branch name'
+        },
+        title: {
+          type: 'string',
+          description: 'The title of the merge request'
+        },
+        description: {
+          type: 'string',
+          description: 'The description of the merge request'
+        },
+        assignee_id: {
+          type: 'number',
+          description: 'The ID of the user to assign the merge request to'
+        },
+        labels: {
+          type: 'string',
+          description: 'Comma-separated list of labels'
+        },
+        remove_source_branch: {
+          type: 'boolean',
+          description: 'Whether to remove the source branch after merge'
+        },
+        squash: {
+          type: 'boolean',
+          description: 'Whether to squash commits when merging'
+        }
+      },
+      required: ['project_id', 'source_branch', 'target_branch', 'title']
+    }
+  },
+  {
     name: 'gitlab_list_issues',
     description: 'List issues in a GitLab project',
     inputSchema: {

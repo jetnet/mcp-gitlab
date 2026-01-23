@@ -30,6 +30,7 @@ export const toolRegistry: ToolRegistry = {
   gitlab_create_merge_request_note: repoHandlers.createMergeRequestNote,
   gitlab_create_merge_request_note_internal: repoHandlers.createMergeRequestNoteInternal,
   gitlab_update_merge_request: repoHandlers.updateMergeRequest,
+  gitlab_create_merge_request: repoHandlers.createMergeRequest,
   gitlab_list_issues: repoHandlers.listIssues,
   gitlab_get_repository_file: repoHandlers.getRepositoryFile,
   gitlab_compare_branches: repoHandlers.compareBranches,

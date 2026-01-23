@@ -170,15 +170,59 @@ export const updateMergeRequest: ToolHandler = async (params, context) => {
   if (!project_id || !merge_request_iid) {
     throw new McpError(ErrorCode.InvalidParams, 'project_id and merge_request_iid are required');
   }
-  
+
   if (!title && !description) {
     throw new McpError(ErrorCode.InvalidParams, 'At least one of title or description is required');
   }
-  
+
   const response = await context.axiosInstance.put(
     `/projects/${encodeURIComponent(String(project_id))}/merge_requests/${merge_request_iid}`,
     { title, description }
   );
+  return formatResponse(response.data);
+};
+
+/**
+ * Create merge request handler
+ */
+export const createMergeRequest: ToolHandler = async (params, context) => {
+  const {
+    project_id,
+    source_branch,
+    target_branch,
+    title,
+    description,
+    assignee_id,
+    labels,
+    remove_source_branch,
+    squash
+  } = params.arguments || {};
+
+  if (!project_id || !source_branch || !target_branch || !title) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      'project_id, source_branch, target_branch, and title are required'
+    );
+  }
+
+  const requestBody: any = {
+    source_branch,
+    target_branch,
+    title
+  };
+
+  // Add optional parameters if provided
+  if (description !== undefined) requestBody.description = description;
+  if (assignee_id !== undefined) requestBody.assignee_id = assignee_id;
+  if (labels !== undefined) requestBody.labels = labels;
+  if (remove_source_branch !== undefined) requestBody.remove_source_branch = remove_source_branch;
+  if (squash !== undefined) requestBody.squash = squash;
+
+  const response = await context.axiosInstance.post(
+    `/projects/${encodeURIComponent(String(project_id))}/merge_requests`,
+    requestBody
+  );
+
   return formatResponse(response.data);
 };
 
