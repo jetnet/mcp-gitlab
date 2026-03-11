@@ -112,6 +112,24 @@ Update a merge request title and description
 | `title` | `string` | No | The title of the merge request |
 | `description` | `string` | No | The description of the merge request |
 
+### gitlab_create_merge_request
+
+Create a new merge request in a GitLab project
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `source_branch` | `string` | Yes | The source branch name |
+| `target_branch` | `string` | Yes | The target branch name |
+| `title` | `string` | Yes | The title of the merge request |
+| `description` | `string` | No | The description of the merge request |
+| `assignee_id` | `number` | No | The ID of the user to assign the merge request to |
+| `labels` | `string` | No | Comma-separated list of labels |
+| `remove_source_branch` | `boolean` | No | Whether to remove the source branch after merge |
+| `squash` | `boolean` | No | Whether to squash commits when merging |
+
 ### gitlab_list_issues
 
 List issues in a GitLab project
@@ -382,6 +400,7 @@ Get a specific CI/CD variable
 | ---- | ---- | -------- | ----------- |
 | `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
 | `key` | `string` | Yes | The key of the variable |
+| `filter` | `object` | No | Filter by environment_scope when multiple variables share the same key |
 
 ### gitlab_create_cicd_variable
 
@@ -396,6 +415,11 @@ Create a new CI/CD variable
 | `value` | `string` | Yes | The value of the variable |
 | `protected` | `boolean` | No | Whether the variable is protected |
 | `masked` | `boolean` | No | Whether the variable is masked |
+| `masked_and_hidden` | `boolean` | No | Whether the variable is masked and hidden. Default: false |
+| `raw` | `boolean` | No | Whether the variable is treated as a raw string. When true, variables in the value are not expanded. Default: false |
+| `description` | `string` | No | The description of the variable (max 255 characters) |
+| `variable_type` | `string` | No | The type of the variable: env_var (default) or file |
+| `environment_scope` | `string` | No | The environment scope of the variable. Default: * |
 
 ### gitlab_update_cicd_variable
 
@@ -410,6 +434,11 @@ Update a CI/CD variable
 | `value` | `string` | Yes | The value of the variable |
 | `protected` | `boolean` | No | Whether the variable is protected |
 | `masked` | `boolean` | No | Whether the variable is masked |
+| `raw` | `boolean` | No | Whether the variable is treated as a raw string. When true, variables in the value are not expanded. Default: false |
+| `description` | `string` | No | The description of the variable (max 255 characters) |
+| `variable_type` | `string` | No | The type of the variable: env_var (default) or file |
+| `environment_scope` | `string` | No | The environment scope of the variable |
+| `filter` | `object` | No | Filter by environment_scope when multiple variables share the same key |
 
 ### gitlab_delete_cicd_variable
 
@@ -421,8 +450,153 @@ Delete a CI/CD variable
 | ---- | ---- | -------- | ----------- |
 | `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
 | `key` | `string` | Yes | The key of the variable |
+| `filter` | `object` | No | Filter by environment_scope when multiple variables share the same key |
+
+### gitlab_list_group_cicd_variables
+
+List CI/CD variables for a group
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `group_id` | `string` | Yes | The ID or URL-encoded path of the group |
+
+### gitlab_get_group_cicd_variable
+
+Get a specific CI/CD variable for a group
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `group_id` | `string` | Yes | The ID or URL-encoded path of the group |
+| `key` | `string` | Yes | The key of the variable |
+| `filter` | `object` | No | Filter by environment_scope when multiple variables share the same key |
+
+### gitlab_create_group_cicd_variable
+
+Create a new CI/CD variable for a group
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `group_id` | `string` | Yes | The ID or URL-encoded path of the group |
+| `key` | `string` | Yes | The key of the variable |
+| `value` | `string` | Yes | The value of the variable |
+| `protected` | `boolean` | No | Whether the variable is protected |
+| `masked` | `boolean` | No | Whether the variable is masked |
+| `masked_and_hidden` | `boolean` | No | Whether the variable is masked and hidden. Default: false |
+| `raw` | `boolean` | No | Whether the variable is treated as a raw string. When true, variables in the value are not expanded. Default: false |
+| `description` | `string` | No | The description of the variable (max 255 characters) |
+| `variable_type` | `string` | No | The type of the variable: env_var (default) or file |
+| `environment_scope` | `string` | No | The environment scope of the variable. Premium and Ultimate only |
+
+### gitlab_update_group_cicd_variable
+
+Update a CI/CD variable for a group
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `group_id` | `string` | Yes | The ID or URL-encoded path of the group |
+| `key` | `string` | Yes | The key of the variable |
+| `value` | `string` | Yes | The value of the variable |
+| `protected` | `boolean` | No | Whether the variable is protected |
+| `masked` | `boolean` | No | Whether the variable is masked |
+| `raw` | `boolean` | No | Whether the variable is treated as a raw string. When true, variables in the value are not expanded. Default: false |
+| `description` | `string` | No | The description of the variable (max 255 characters) |
+| `variable_type` | `string` | No | The type of the variable: env_var (default) or file |
+| `environment_scope` | `string` | No | The environment scope of the variable. Premium and Ultimate only |
+| `filter` | `object` | No | Filter by environment_scope when multiple variables share the same key |
+
+### gitlab_delete_group_cicd_variable
+
+Delete a CI/CD variable for a group
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `group_id` | `string` | Yes | The ID or URL-encoded path of the group |
+| `key` | `string` | Yes | The key of the variable |
+| `filter` | `object` | No | Filter by environment_scope when multiple variables share the same key |
 
 ## User & Group Management
+
+### gitlab_list_group_cicd_variables
+
+List CI/CD variables for a group
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `group_id` | `string` | Yes | The ID or URL-encoded path of the group |
+
+### gitlab_get_group_cicd_variable
+
+Get a specific CI/CD variable for a group
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `group_id` | `string` | Yes | The ID or URL-encoded path of the group |
+| `key` | `string` | Yes | The key of the variable |
+| `filter` | `object` | No | Filter by environment_scope when multiple variables share the same key |
+
+### gitlab_create_group_cicd_variable
+
+Create a new CI/CD variable for a group
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `group_id` | `string` | Yes | The ID or URL-encoded path of the group |
+| `key` | `string` | Yes | The key of the variable |
+| `value` | `string` | Yes | The value of the variable |
+| `protected` | `boolean` | No | Whether the variable is protected |
+| `masked` | `boolean` | No | Whether the variable is masked |
+| `masked_and_hidden` | `boolean` | No | Whether the variable is masked and hidden. Default: false |
+| `raw` | `boolean` | No | Whether the variable is treated as a raw string. When true, variables in the value are not expanded. Default: false |
+| `description` | `string` | No | The description of the variable (max 255 characters) |
+| `variable_type` | `string` | No | The type of the variable: env_var (default) or file |
+| `environment_scope` | `string` | No | The environment scope of the variable. Premium and Ultimate only |
+
+### gitlab_update_group_cicd_variable
+
+Update a CI/CD variable for a group
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `group_id` | `string` | Yes | The ID or URL-encoded path of the group |
+| `key` | `string` | Yes | The key of the variable |
+| `value` | `string` | Yes | The value of the variable |
+| `protected` | `boolean` | No | Whether the variable is protected |
+| `masked` | `boolean` | No | Whether the variable is masked |
+| `raw` | `boolean` | No | Whether the variable is treated as a raw string. When true, variables in the value are not expanded. Default: false |
+| `description` | `string` | No | The description of the variable (max 255 characters) |
+| `variable_type` | `string` | No | The type of the variable: env_var (default) or file |
+| `environment_scope` | `string` | No | The environment scope of the variable. Premium and Ultimate only |
+| `filter` | `object` | No | Filter by environment_scope when multiple variables share the same key |
+
+### gitlab_delete_group_cicd_variable
+
+Delete a CI/CD variable for a group
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `group_id` | `string` | Yes | The ID or URL-encoded path of the group |
+| `key` | `string` | Yes | The key of the variable |
+| `filter` | `object` | No | Filter by environment_scope when multiple variables share the same key |
 
 ### gitlab_list_users
 

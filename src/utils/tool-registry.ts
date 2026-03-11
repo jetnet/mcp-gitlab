@@ -59,6 +59,11 @@ export const toolRegistry: ToolRegistry = {
   gitlab_create_cicd_variable: cicdHandlers.createCiCdVariable,
   gitlab_update_cicd_variable: cicdHandlers.updateCiCdVariable,
   gitlab_delete_cicd_variable: cicdHandlers.deleteCiCdVariable,
+  gitlab_list_group_cicd_variables: cicdHandlers.listGroupCiCdVariables,
+  gitlab_get_group_cicd_variable: cicdHandlers.getGroupCiCdVariable,
+  gitlab_create_group_cicd_variable: cicdHandlers.createGroupCiCdVariable,
+  gitlab_update_group_cicd_variable: cicdHandlers.updateGroupCiCdVariable,
+  gitlab_delete_group_cicd_variable: cicdHandlers.deleteGroupCiCdVariable,
 
   // Users and Groups tools
   gitlab_list_users: usersGroupsHandlers.listUsers,
@@ -69,4 +74,4 @@ export const toolRegistry: ToolRegistry = {
   gitlab_add_group_member: usersGroupsHandlers.addGroupMember,
   gitlab_list_project_members: usersGroupsHandlers.listProjectMembers,
   gitlab_add_project_member: usersGroupsHandlers.addProjectMember
-}; 
+};

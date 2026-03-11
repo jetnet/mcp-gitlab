@@ -676,6 +676,16 @@ export const toolDefinitions = [
         key: {
           type: 'string',
           description: 'The key of the variable'
+        },
+        filter: {
+          type: 'object',
+          description: 'Filter by environment_scope when multiple variables share the same key',
+          properties: {
+            environment_scope: {
+              type: 'string',
+              description: 'The environment scope to filter by'
+            }
+          }
         }
       },
       required: ['project_id', 'key']
@@ -706,6 +716,27 @@ export const toolDefinitions = [
         masked: {
           type: 'boolean',
           description: 'Whether the variable is masked'
+        },
+        masked_and_hidden: {
+          type: 'boolean',
+          description: 'Whether the variable is masked and hidden. Default: false'
+        },
+        raw: {
+          type: 'boolean',
+          description: 'Whether the variable is treated as a raw string. When true, variables in the value are not expanded. Default: false'
+        },
+        description: {
+          type: 'string',
+          description: 'The description of the variable (max 255 characters)'
+        },
+        variable_type: {
+          type: 'string',
+          description: 'The type of the variable: env_var (default) or file',
+          enum: ['env_var', 'file']
+        },
+        environment_scope: {
+          type: 'string',
+          description: 'The environment scope of the variable. Default: *'
         }
       },
       required: ['project_id', 'key', 'value']
@@ -736,6 +767,33 @@ export const toolDefinitions = [
         masked: {
           type: 'boolean',
           description: 'Whether the variable is masked'
+        },
+        raw: {
+          type: 'boolean',
+          description: 'Whether the variable is treated as a raw string. When true, variables in the value are not expanded. Default: false'
+        },
+        description: {
+          type: 'string',
+          description: 'The description of the variable (max 255 characters)'
+        },
+        variable_type: {
+          type: 'string',
+          description: 'The type of the variable: env_var (default) or file',
+          enum: ['env_var', 'file']
+        },
+        environment_scope: {
+          type: 'string',
+          description: 'The environment scope of the variable'
+        },
+        filter: {
+          type: 'object',
+          description: 'Filter by environment_scope when multiple variables share the same key',
+          properties: {
+            environment_scope: {
+              type: 'string',
+              description: 'The environment scope to filter by'
+            }
+          }
         }
       },
       required: ['project_id', 'key', 'value']
@@ -754,9 +812,197 @@ export const toolDefinitions = [
         key: {
           type: 'string',
           description: 'The key of the variable'
+        },
+        filter: {
+          type: 'object',
+          description: 'Filter by environment_scope when multiple variables share the same key',
+          properties: {
+            environment_scope: {
+              type: 'string',
+              description: 'The environment scope to filter by'
+            }
+          }
         }
       },
       required: ['project_id', 'key']
+    }
+  },
+  {
+    name: 'gitlab_list_group_cicd_variables',
+    description: 'List CI/CD variables for a group',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        group_id: {
+          type: 'string',
+          description: 'The ID or URL-encoded path of the group'
+        }
+      },
+      required: ['group_id']
+    }
+  },
+  {
+    name: 'gitlab_get_group_cicd_variable',
+    description: 'Get a specific CI/CD variable for a group',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        group_id: {
+          type: 'string',
+          description: 'The ID or URL-encoded path of the group'
+        },
+        key: {
+          type: 'string',
+          description: 'The key of the variable'
+        },
+        filter: {
+          type: 'object',
+          description: 'Filter by environment_scope when multiple variables share the same key',
+          properties: {
+            environment_scope: {
+              type: 'string',
+              description: 'The environment scope to filter by'
+            }
+          }
+        }
+      },
+      required: ['group_id', 'key']
+    }
+  },
+  {
+    name: 'gitlab_create_group_cicd_variable',
+    description: 'Create a new CI/CD variable for a group',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        group_id: {
+          type: 'string',
+          description: 'The ID or URL-encoded path of the group'
+        },
+        key: {
+          type: 'string',
+          description: 'The key of the variable'
+        },
+        value: {
+          type: 'string',
+          description: 'The value of the variable'
+        },
+        protected: {
+          type: 'boolean',
+          description: 'Whether the variable is protected'
+        },
+        masked: {
+          type: 'boolean',
+          description: 'Whether the variable is masked'
+        },
+        masked_and_hidden: {
+          type: 'boolean',
+          description: 'Whether the variable is masked and hidden. Default: false'
+        },
+        raw: {
+          type: 'boolean',
+          description: 'Whether the variable is treated as a raw string. When true, variables in the value are not expanded. Default: false'
+        },
+        description: {
+          type: 'string',
+          description: 'The description of the variable (max 255 characters)'
+        },
+        variable_type: {
+          type: 'string',
+          description: 'The type of the variable: env_var (default) or file',
+          enum: ['env_var', 'file']
+        },
+        environment_scope: {
+          type: 'string',
+          description: 'The environment scope of the variable. Premium and Ultimate only'
+        }
+      },
+      required: ['group_id', 'key', 'value']
+    }
+  },
+  {
+    name: 'gitlab_update_group_cicd_variable',
+    description: 'Update a CI/CD variable for a group',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        group_id: {
+          type: 'string',
+          description: 'The ID or URL-encoded path of the group'
+        },
+        key: {
+          type: 'string',
+          description: 'The key of the variable'
+        },
+        value: {
+          type: 'string',
+          description: 'The value of the variable'
+        },
+        protected: {
+          type: 'boolean',
+          description: 'Whether the variable is protected'
+        },
+        masked: {
+          type: 'boolean',
+          description: 'Whether the variable is masked'
+        },
+        raw: {
+          type: 'boolean',
+          description: 'Whether the variable is treated as a raw string. When true, variables in the value are not expanded. Default: false'
+        },
+        description: {
+          type: 'string',
+          description: 'The description of the variable (max 255 characters)'
+        },
+        variable_type: {
+          type: 'string',
+          description: 'The type of the variable: env_var (default) or file',
+          enum: ['env_var', 'file']
+        },
+        environment_scope: {
+          type: 'string',
+          description: 'The environment scope of the variable. Premium and Ultimate only'
+        },
+        filter: {
+          type: 'object',
+          description: 'Filter by environment_scope when multiple variables share the same key',
+          properties: {
+            environment_scope: {
+              type: 'string',
+              description: 'The environment scope to filter by'
+            }
+          }
+        }
+      },
+      required: ['group_id', 'key', 'value']
+    }
+  },
+  {
+    name: 'gitlab_delete_group_cicd_variable',
+    description: 'Delete a CI/CD variable for a group',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        group_id: {
+          type: 'string',
+          description: 'The ID or URL-encoded path of the group'
+        },
+        key: {
+          type: 'string',
+          description: 'The key of the variable'
+        },
+        filter: {
+          type: 'object',
+          description: 'Filter by environment_scope when multiple variables share the same key',
+          properties: {
+            environment_scope: {
+              type: 'string',
+              description: 'The environment scope to filter by'
+            }
+          }
+        }
+      },
+      required: ['group_id', 'key']
     }
   },
 
@@ -903,4 +1149,4 @@ export const toolDefinitions = [
 export const repositoryTools = toolDefinitions.slice(0, 12);
 export const integrationTools = toolDefinitions.slice(10, 20);
 export const cicdTools = toolDefinitions.slice(20, 31);
-export const usersGroupsTools = toolDefinitions.slice(31); 
+export const usersGroupsTools = toolDefinitions.slice(31);

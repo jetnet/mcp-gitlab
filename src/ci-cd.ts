@@ -143,8 +143,28 @@ export class CiCdManager {
    */
   async listCiCdVariables(projectId: string | number) {
     try {
-      const response = await this.axiosInstance.get(`/projects/${encodeURIComponent(String(projectId))}/variables`);
-      return response.data;
+      let page = 1;
+      const perPage = 100;
+      let allVariables: any[] = [];
+      let hasMore = true;
+
+      while (hasMore) {
+        const response = await this.axiosInstance.get(`/projects/${encodeURIComponent(String(projectId))}/variables`, {
+          params: {
+            page,
+            per_page: perPage,
+          },
+        });
+
+        if (response.data.length > 0) {
+          allVariables = allVariables.concat(response.data);
+          page++;
+        } else {
+          hasMore = false;
+        }
+      }
+
+      return allVariables;
     } catch (error) {
       throw this.handleError(error, 'Failed to list CI/CD variables');
     }
@@ -157,10 +177,17 @@ export class CiCdManager {
    * @param key Key of the variable
    * @returns Variable details
    */
-  async getCiCdVariable(projectId: string | number, key: string) {
+  async getCiCdVariable(projectId: string | number, key: string, filter?: {
+    environment_scope?: string;
+  }) {
     try {
+      const params: Record<string, string> = {};
+      if (filter?.environment_scope) {
+        params['filter[environment_scope]'] = filter.environment_scope;
+      }
       const response = await this.axiosInstance.get(
-        `/projects/${encodeURIComponent(String(projectId))}/variables/${encodeURIComponent(key)}`
+        `/projects/${encodeURIComponent(String(projectId))}/variables/${encodeURIComponent(key)}`,
+        { params }
       );
       return response.data;
     } catch (error) {
@@ -180,6 +207,9 @@ export class CiCdManager {
     value: string;
     protected?: boolean;
     masked?: boolean;
+    masked_and_hidden?: boolean;
+    raw?: boolean;
+    description?: string;
     environment_scope?: string;
     variable_type?: 'env_var' | 'file';
   }) {
@@ -206,13 +236,22 @@ export class CiCdManager {
     value: string;
     protected?: boolean;
     masked?: boolean;
+    raw?: boolean;
+    description?: string;
     environment_scope?: string;
     variable_type?: 'env_var' | 'file';
+    filter?: { environment_scope?: string };
   }) {
     try {
+      const params: Record<string, string> = {};
+      if (options.filter?.environment_scope) {
+        params['filter[environment_scope]'] = options.filter.environment_scope;
+      }
+      const { filter, ...body } = options;
       const response = await this.axiosInstance.put(
         `/projects/${encodeURIComponent(String(projectId))}/variables/${encodeURIComponent(key)}`,
-        options
+        body,
+        { params }
       );
       return response.data;
     } catch (error) {
@@ -227,14 +266,170 @@ export class CiCdManager {
    * @param key Key of the variable to delete
    * @returns Response data
    */
-  async deleteCiCdVariable(projectId: string | number, key: string) {
+  async deleteCiCdVariable(projectId: string | number, key: string, filter?: {
+    environment_scope?: string;
+  }) {
     try {
+      const params: Record<string, string> = {};
+      if (filter?.environment_scope) {
+        params['filter[environment_scope]'] = filter.environment_scope;
+      }
       const response = await this.axiosInstance.delete(
-        `/projects/${encodeURIComponent(String(projectId))}/variables/${encodeURIComponent(key)}`
+        `/projects/${encodeURIComponent(String(projectId))}/variables/${encodeURIComponent(key)}`,
+        { params }
       );
       return response.data;
     } catch (error) {
       throw this.handleError(error, `Failed to delete CI/CD variable: ${key}`);
+    }
+  }
+
+  /**
+   * List group CI/CD variables
+   *
+   * @param groupId ID or URL-encoded path of the group
+   * @returns List of CI/CD variables
+   */
+  async listGroupCiCdVariables(groupId: string | number) {
+    try {
+      let page = 1;
+      const perPage = 100;
+      let allVariables: any[] = [];
+      let hasMore = true;
+
+      while (hasMore) {
+        const response = await this.axiosInstance.get(`/groups/${encodeURIComponent(String(groupId))}/variables`, {
+          params: {
+            page,
+            per_page: perPage,
+          },
+        });
+
+        if (response.data.length > 0) {
+          allVariables = allVariables.concat(response.data);
+          page++;
+        } else {
+          hasMore = false;
+        }
+      }
+
+      return allVariables;
+    } catch (error) {
+      throw this.handleError(error, 'Failed to list group CI/CD variables');
+    }
+  }
+
+  /**
+   * Get a specific group CI/CD variable
+   *
+   * @param groupId ID or URL-encoded path of the group
+   * @param key Key of the variable
+   * @returns Variable details
+   */
+  async getGroupCiCdVariable(groupId: string | number, key: string, filter?: {
+    environment_scope?: string;
+  }) {
+    try {
+      const params: Record<string, string> = {};
+      if (filter?.environment_scope) {
+        params['filter[environment_scope]'] = filter.environment_scope;
+      }
+      const response = await this.axiosInstance.get(
+        `/groups/${encodeURIComponent(String(groupId))}/variables/${encodeURIComponent(key)}`,
+        { params }
+      );
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error, `Failed to get group CI/CD variable: ${key}`);
+    }
+  }
+
+  /**
+   * Create a new group CI/CD variable
+   *
+   * @param groupId ID or URL-encoded path of the group
+   * @param options Variable options
+   * @returns Created variable details
+   */
+  async createGroupCiCdVariable(groupId: string | number, options: {
+    key: string;
+    value: string;
+    protected?: boolean;
+    masked?: boolean;
+    masked_and_hidden?: boolean;
+    raw?: boolean;
+    description?: string;
+    environment_scope?: string;
+    variable_type?: 'env_var' | 'file';
+  }) {
+    try {
+      const response = await this.axiosInstance.post(
+        `/groups/${encodeURIComponent(String(groupId))}/variables`,
+        options
+      );
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error, `Failed to create group CI/CD variable: ${options.key}`);
+    }
+  }
+
+  /**
+   * Update a group CI/CD variable
+   *
+   * @param groupId ID or URL-encoded path of the group
+   * @param key Key of the variable to update
+   * @param options Variable options to update
+   * @returns Updated variable details
+   */
+  async updateGroupCiCdVariable(groupId: string | number, key: string, options: {
+    value: string;
+    protected?: boolean;
+    masked?: boolean;
+    raw?: boolean;
+    description?: string;
+    environment_scope?: string;
+    variable_type?: 'env_var' | 'file';
+    filter?: { environment_scope?: string };
+  }) {
+    try {
+      const params: Record<string, string> = {};
+      if (options.filter?.environment_scope) {
+        params['filter[environment_scope]'] = options.filter.environment_scope;
+      }
+      const { filter, ...body } = options;
+      const response = await this.axiosInstance.put(
+        `/groups/${encodeURIComponent(String(groupId))}/variables/${encodeURIComponent(key)}`,
+        body,
+        { params }
+      );
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error, `Failed to update group CI/CD variable: ${key}`);
+    }
+  }
+
+  /**
+   * Delete a group CI/CD variable
+   *
+   * @param groupId ID or URL-encoded path of the group
+   * @param key Key of the variable to delete
+   * @returns Response data
+   */
+  async deleteGroupCiCdVariable(groupId: string | number, key: string, filter?: {
+    environment_scope?: string;
+  }) {
+    try {
+      const params: Record<string, string> = {};
+      if (filter?.environment_scope) {
+        params['filter[environment_scope]'] = filter.environment_scope;
+      }
+      const response = await this.axiosInstance.delete(
+        `/groups/${encodeURIComponent(String(groupId))}/variables/${encodeURIComponent(key)}`,
+        { params }
+      );
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error, `Failed to delete group CI/CD variable: ${key}`);
     }
   }
 

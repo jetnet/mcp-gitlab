@@ -25,6 +25,24 @@ import { CiCdManager } from "./ci-cd.js";
 import { UsersGroupsManager } from "./users-groups.js";
 
 // Import utility modules
+import { 
+  createCiCdVariable,
+  createGroupCiCdVariable,
+  createTriggerToken,
+  deleteCiCdVariable,
+  deleteGroupCiCdVariable,
+  deleteTriggerToken,
+  getCiCdVariable,
+  getGroupCiCdVariable,
+  getTriggerToken,
+  listCiCdVariables,
+  listGroupCiCdVariables,
+  listTriggerTokens,
+  triggerPipeline,
+  updateCiCdVariable,
+  updateGroupCiCdVariable,
+  updateTriggerToken
+} from "./handlers/cicd-handlers.js";
 import { toolRegistry } from "./utils/tool-registry.js";
 import { toolDefinitions } from "./utils/tools-data.js";
 import { handleListResources, handleReadResource } from "./utils/resource-handlers.js";
@@ -150,4 +168,4 @@ const server = new GitLabServer();
 server.start().catch(error => {
   console.error("Failed to start server:", error);
   process.exit(1);
-}); 
+});

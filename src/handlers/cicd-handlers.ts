@@ -106,12 +106,16 @@ export const listCiCdVariables: ToolHandler = async (params, context) => {
  * Get CI/CD variable handler
  */
 export const getCiCdVariable: ToolHandler = async (params, context) => {
-  const { project_id, key } = params.arguments || {};
+  const { project_id, key, filter } = params.arguments || {};
   if (!project_id || !key) {
     throw new McpError(ErrorCode.InvalidParams, 'project_id and key are required');
   }
   
-  const data = await context.ciCdManager.getCiCdVariable(project_id as string | number, key as string);
+  const data = await context.ciCdManager.getCiCdVariable(
+    project_id as string | number,
+    key as string,
+    filter as { environment_scope?: string } | undefined
+  );
   return formatResponse(data);
 };
 
@@ -119,7 +123,7 @@ export const getCiCdVariable: ToolHandler = async (params, context) => {
  * Create CI/CD variable handler
  */
 export const createCiCdVariable: ToolHandler = async (params, context) => {
-  const { project_id, key, value, protected: isProtected, masked, variable_type, environment_scope } = params.arguments || {};
+  const { project_id, key, value, protected: isProtected, masked, masked_and_hidden, raw, description, variable_type, environment_scope } = params.arguments || {};
   if (!project_id || !key || !value) {
     throw new McpError(ErrorCode.InvalidParams, 'project_id, key, and value are required');
   }
@@ -129,6 +133,9 @@ export const createCiCdVariable: ToolHandler = async (params, context) => {
     value: value as string,
     protected: isProtected as boolean | undefined,
     masked: masked as boolean | undefined,
+    masked_and_hidden: masked_and_hidden as boolean | undefined,
+    raw: raw as boolean | undefined,
+    description: description as string | undefined,
     variable_type: variable_type as 'env_var' | 'file' | undefined,
     environment_scope: environment_scope as string | undefined
   });
@@ -139,7 +146,7 @@ export const createCiCdVariable: ToolHandler = async (params, context) => {
  * Update CI/CD variable handler
  */
 export const updateCiCdVariable: ToolHandler = async (params, context) => {
-  const { project_id, key, value, protected: isProtected, masked, variable_type, environment_scope } = params.arguments || {};
+  const { project_id, key, value, protected: isProtected, masked, raw, description, variable_type, environment_scope, filter } = params.arguments || {};
   if (!project_id || !key) {
     throw new McpError(ErrorCode.InvalidParams, 'project_id and key are required');
   }
@@ -148,8 +155,11 @@ export const updateCiCdVariable: ToolHandler = async (params, context) => {
     value: value as string,
     protected: isProtected as boolean | undefined,
     masked: masked as boolean | undefined,
+    raw: raw as boolean | undefined,
+    description: description as string | undefined,
     variable_type: variable_type as 'env_var' | 'file' | undefined,
-    environment_scope: environment_scope as string | undefined
+    environment_scope: environment_scope as string | undefined,
+    filter: filter as { environment_scope?: string } | undefined
   });
   return formatResponse(data);
 };
@@ -158,11 +168,107 @@ export const updateCiCdVariable: ToolHandler = async (params, context) => {
  * Delete CI/CD variable handler
  */
 export const deleteCiCdVariable: ToolHandler = async (params, context) => {
-  const { project_id, key } = params.arguments || {};
+  const { project_id, key, filter } = params.arguments || {};
   if (!project_id || !key) {
     throw new McpError(ErrorCode.InvalidParams, 'project_id and key are required');
   }
   
-  const data = await context.ciCdManager.deleteCiCdVariable(project_id as string | number, key as string);
+  const data = await context.ciCdManager.deleteCiCdVariable(
+    project_id as string | number,
+    key as string,
+    filter as { environment_scope?: string } | undefined
+  );
   return formatResponse(data);
-}; 
+};
+
+/**
+ * List group CI/CD variables handler
+ */
+export const listGroupCiCdVariables: ToolHandler = async (params, context) => {
+  const { group_id } = params.arguments || {};
+  if (!group_id) {
+    throw new McpError(ErrorCode.InvalidParams, 'group_id is required');
+  }
+
+  const data = await context.ciCdManager.listGroupCiCdVariables(group_id as string | number);
+  return formatResponse(data);
+};
+
+/**
+ * Get group CI/CD variable handler
+ */
+export const getGroupCiCdVariable: ToolHandler = async (params, context) => {
+  const { group_id, key, filter } = params.arguments || {};
+  if (!group_id || !key) {
+    throw new McpError(ErrorCode.InvalidParams, 'group_id and key are required');
+  }
+
+  const data = await context.ciCdManager.getGroupCiCdVariable(
+    group_id as string | number,
+    key as string,
+    filter as { environment_scope?: string } | undefined
+  );
+  return formatResponse(data);
+};
+
+/**
+ * Create group CI/CD variable handler
+ */
+export const createGroupCiCdVariable: ToolHandler = async (params, context) => {
+  const { group_id, key, value, protected: isProtected, masked, masked_and_hidden, raw, description, variable_type, environment_scope } = params.arguments || {};
+  if (!group_id || !key || !value) {
+    throw new McpError(ErrorCode.InvalidParams, 'group_id, key, and value are required');
+  }
+
+  const data = await context.ciCdManager.createGroupCiCdVariable(group_id as string | number, {
+    key: key as string,
+    value: value as string,
+    protected: isProtected as boolean | undefined,
+    masked: masked as boolean | undefined,
+    masked_and_hidden: masked_and_hidden as boolean | undefined,
+    raw: raw as boolean | undefined,
+    description: description as string | undefined,
+    variable_type: variable_type as 'env_var' | 'file' | undefined,
+    environment_scope: environment_scope as string | undefined
+  });
+  return formatResponse(data);
+};
+
+/**
+ * Update group CI/CD variable handler
+ */
+export const updateGroupCiCdVariable: ToolHandler = async (params, context) => {
+  const { group_id, key, value, protected: isProtected, masked, raw, description, variable_type, environment_scope, filter } = params.arguments || {};
+  if (!group_id || !key) {
+    throw new McpError(ErrorCode.InvalidParams, 'group_id and key are required');
+  }
+
+  const data = await context.ciCdManager.updateGroupCiCdVariable(group_id as string | number, key as string, {
+    value: value as string,
+    protected: isProtected as boolean | undefined,
+    masked: masked as boolean | undefined,
+    raw: raw as boolean | undefined,
+    description: description as string | undefined,
+    variable_type: variable_type as 'env_var' | 'file' | undefined,
+    environment_scope: environment_scope as string | undefined,
+    filter: filter as { environment_scope?: string } | undefined
+  });
+  return formatResponse(data);
+};
+
+/**
+ * Delete group CI/CD variable handler
+ */
+export const deleteGroupCiCdVariable: ToolHandler = async (params, context) => {
+  const { group_id, key, filter } = params.arguments || {};
+  if (!group_id || !key) {
+    throw new McpError(ErrorCode.InvalidParams, 'group_id and key are required');
+  }
+
+  const data = await context.ciCdManager.deleteGroupCiCdVariable(
+    group_id as string | number,
+    key as string,
+    filter as { environment_scope?: string } | undefined
+  );
+  return formatResponse(data);
+};
