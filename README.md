@@ -117,7 +117,76 @@ Replace `YOUR_GITLAB_API_TOKEN` with your actual GitLab API token. You can gener
 
 ## Available Tools
 
-For a complete list of available tools and their parameters, see [TOOLS.md](./TOOLS.md).
+For full parameter details, see [TOOLS.md](./TOOLS.md).
+
+### Repository Management (14 tools)
+
+| Tool | Description |
+|------|-------------|
+| `gitlab_list_projects` | List GitLab projects accessible to the user |
+| `gitlab_get_project` | Get details of a specific project |
+| `gitlab_list_branches` | List branches of a project |
+| `gitlab_list_merge_requests` | List merge requests in a project |
+| `gitlab_get_merge_request` | Get details of a specific merge request |
+| `gitlab_get_merge_request_changes` | Get changes (diff) of a merge request |
+| `gitlab_create_merge_request` | Create a new merge request |
+| `gitlab_create_merge_request_note` | Add a comment to a merge request |
+| `gitlab_create_merge_request_note_internal` | Add an internal note to a merge request |
+| `gitlab_update_merge_request` | Update a merge request title and description |
+| `gitlab_list_issues` | List issues in a project |
+| `gitlab_get_repository_file` | Get content of a file in a repository |
+| `gitlab_compare_branches` | Compare branches, tags or commits |
+| `gitlab_list_project_members` | List members of a project |
+
+### Integrations & Webhooks (8 tools)
+
+| Tool | Description |
+|------|-------------|
+| `gitlab_list_integrations` | List all available project integrations/services |
+| `gitlab_get_integration` | Get integration details for a project |
+| `gitlab_update_slack_integration` | Update Slack integration settings |
+| `gitlab_disable_slack_integration` | Disable Slack integration |
+| `gitlab_list_webhooks` | List webhooks for a project |
+| `gitlab_get_webhook` | Get details of a specific webhook |
+| `gitlab_add_webhook` | Add a new webhook to a project |
+| `gitlab_update_webhook` | Update an existing webhook |
+| `gitlab_delete_webhook` | Delete a webhook |
+| `gitlab_test_webhook` | Test a webhook |
+
+### CI/CD Management (18 tools)
+
+| Tool | Description |
+|------|-------------|
+| `gitlab_list_trigger_tokens` | List pipeline trigger tokens |
+| `gitlab_get_trigger_token` | Get details of a trigger token |
+| `gitlab_create_trigger_token` | Create a new trigger token |
+| `gitlab_update_trigger_token` | Update a trigger token |
+| `gitlab_delete_trigger_token` | Delete a trigger token |
+| `gitlab_trigger_pipeline` | Trigger a pipeline run |
+| `gitlab_list_cicd_variables` | List CI/CD variables for a project |
+| `gitlab_get_cicd_variable` | Get a specific project CI/CD variable |
+| `gitlab_create_cicd_variable` | Create a new project CI/CD variable |
+| `gitlab_update_cicd_variable` | Update a project CI/CD variable |
+| `gitlab_delete_cicd_variable` | Delete a project CI/CD variable |
+| `gitlab_list_group_cicd_variables` | List CI/CD variables for a group |
+| `gitlab_get_group_cicd_variable` | Get a specific group CI/CD variable |
+| `gitlab_create_group_cicd_variable` | Create a new group CI/CD variable |
+| `gitlab_update_group_cicd_variable` | Update a group CI/CD variable |
+| `gitlab_delete_group_cicd_variable` | Delete a group CI/CD variable |
+
+> CI/CD variable tools support all GitLab API parameters including `raw`, `masked`, `masked_and_hidden`, `description`, `variable_type`, `environment_scope`, and `filter`.
+
+### User & Group Administration (6 tools)
+
+| Tool | Description |
+|------|-------------|
+| `gitlab_list_users` | List GitLab users |
+| `gitlab_get_user` | Get details of a specific user |
+| `gitlab_list_groups` | List GitLab groups |
+| `gitlab_get_group` | Get details of a specific group |
+| `gitlab_list_group_members` | List members of a group |
+| `gitlab_add_group_member` | Add a user to a group |
+| `gitlab_add_project_member` | Add a user to a project |
 
 ## Example Usage
 
