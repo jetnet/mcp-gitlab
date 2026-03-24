@@ -1142,11 +1142,586 @@ export const toolDefinitions = [
       },
       required: ['project_id', 'user_id', 'access_level']
     }
+  },
+
+  // Pipeline tools
+  {
+    name: 'gitlab_list_pipelines',
+    description: 'List pipelines in a GitLab project. Returns pipeline ID, status, ref, SHA, and timestamps.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        status: { type: 'string', description: 'Filter by status', enum: ['created', 'waiting_for_resource', 'preparing', 'pending', 'running', 'success', 'failed', 'canceled', 'skipped', 'manual', 'scheduled'] },
+        ref: { type: 'string', description: 'Filter by branch or tag name' },
+        source: { type: 'string', description: 'Filter by pipeline source (push, web, trigger, schedule, api, merge_request_event, etc.)' },
+        per_page: { type: 'number', description: 'Number of results per page (max 100)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      },
+      required: ['project_id']
+    }
+  },
+  {
+    name: 'gitlab_get_pipeline',
+    description: 'Get details of a specific pipeline including status, duration, coverage, and user info',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        pipeline_id: { type: 'number', description: 'The ID of the pipeline' }
+      },
+      required: ['project_id', 'pipeline_id']
+    }
+  },
+  {
+    name: 'gitlab_create_pipeline',
+    description: 'Create a new pipeline for a branch or tag',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        ref: { type: 'string', description: 'The branch or tag name to create the pipeline for' },
+        variables: {
+          type: 'array',
+          description: 'Array of variables for the pipeline',
+          items: {
+            type: 'object',
+            properties: {
+              key: { type: 'string' },
+              value: { type: 'string' },
+              variable_type: { type: 'string', enum: ['env_var', 'file'] }
+            }
+          }
+        }
+      },
+      required: ['project_id', 'ref']
+    }
+  },
+  {
+    name: 'gitlab_cancel_pipeline',
+    description: 'Cancel all running/pending jobs in a pipeline',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        pipeline_id: { type: 'number', description: 'The ID of the pipeline' }
+      },
+      required: ['project_id', 'pipeline_id']
+    }
+  },
+  {
+    name: 'gitlab_retry_pipeline',
+    description: 'Retry all failed jobs in a pipeline',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        pipeline_id: { type: 'number', description: 'The ID of the pipeline' }
+      },
+      required: ['project_id', 'pipeline_id']
+    }
+  },
+  {
+    name: 'gitlab_delete_pipeline',
+    description: 'Delete a pipeline and all its jobs',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        pipeline_id: { type: 'number', description: 'The ID of the pipeline' }
+      },
+      required: ['project_id', 'pipeline_id']
+    }
+  },
+  {
+    name: 'gitlab_list_pipeline_jobs',
+    description: 'List jobs for a specific pipeline. Returns job name, status, stage, duration, and runner info.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        pipeline_id: { type: 'number', description: 'The ID of the pipeline' },
+        scope: {
+          type: 'string',
+          description: 'Filter by job scope',
+          enum: ['created', 'pending', 'running', 'failed', 'success', 'canceled', 'skipped', 'waiting_for_resource', 'manual']
+        },
+        per_page: { type: 'number', description: 'Number of results per page (max 100)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      },
+      required: ['project_id', 'pipeline_id']
+    }
+  },
+  {
+    name: 'gitlab_get_job',
+    description: 'Get details of a single job including status, stage, duration, artifacts, and runner info',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        job_id: { type: 'number', description: 'The ID of the job' }
+      },
+      required: ['project_id', 'job_id']
+    }
+  },
+  {
+    name: 'gitlab_get_job_log',
+    description: 'Get the log (trace) output of a specific job. Returns the raw text log of the job execution.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        job_id: { type: 'number', description: 'The ID of the job' }
+      },
+      required: ['project_id', 'job_id']
+    }
+  },
+  {
+    name: 'gitlab_cancel_job',
+    description: 'Cancel a running job',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        job_id: { type: 'number', description: 'The ID of the job' }
+      },
+      required: ['project_id', 'job_id']
+    }
+  },
+  {
+    name: 'gitlab_retry_job',
+    description: 'Retry a failed or cancelled job',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        job_id: { type: 'number', description: 'The ID of the job' }
+      },
+      required: ['project_id', 'job_id']
+    }
+  },
+  {
+    name: 'gitlab_list_pipeline_bridges',
+    description: 'List bridge jobs (downstream pipeline triggers) for a pipeline',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        pipeline_id: { type: 'number', description: 'The ID of the pipeline' },
+        scope: {
+          type: 'string',
+          description: 'Filter by job scope',
+          enum: ['created', 'pending', 'running', 'failed', 'success', 'canceled', 'skipped', 'waiting_for_resource', 'manual']
+        },
+        per_page: { type: 'number', description: 'Number of results per page (max 100)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      },
+      required: ['project_id', 'pipeline_id']
+    }
+  },
+
+  // Repository extended tools
+  {
+    name: 'gitlab_list_commits',
+    description: 'List repository commits with optional filters by branch, date range, and path',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        ref_name: { type: 'string', description: 'Branch name, tag, or commit SHA to list commits for' },
+        since: { type: 'string', description: 'Only commits after this date (ISO 8601 format)' },
+        until: { type: 'string', description: 'Only commits before this date (ISO 8601 format)' },
+        path: { type: 'string', description: 'Only commits affecting this file path' },
+        per_page: { type: 'number', description: 'Number of results per page (max 100)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      },
+      required: ['project_id']
+    }
+  },
+  {
+    name: 'gitlab_get_commit',
+    description: 'Get details of a specific commit including diff stats and parent info',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        sha: { type: 'string', description: 'The commit SHA' }
+      },
+      required: ['project_id', 'sha']
+    }
+  },
+  {
+    name: 'gitlab_list_tags',
+    description: 'List repository tags with optional search and ordering',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        search: { type: 'string', description: 'Search tags by name' },
+        order_by: { type: 'string', description: 'Order by name, updated, or version', enum: ['name', 'updated', 'version'] },
+        sort: { type: 'string', description: 'Sort direction', enum: ['asc', 'desc'] },
+        per_page: { type: 'number', description: 'Number of results per page (max 100)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      },
+      required: ['project_id']
+    }
+  },
+  {
+    name: 'gitlab_get_tag',
+    description: 'Get details of a specific tag including commit info and release notes',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        tag_name: { type: 'string', description: 'The name of the tag' }
+      },
+      required: ['project_id', 'tag_name']
+    }
+  },
+  {
+    name: 'gitlab_create_tag',
+    description: 'Create a new tag in the repository',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        tag_name: { type: 'string', description: 'The name of the tag' },
+        ref: { type: 'string', description: 'The branch name or commit SHA to create the tag from' },
+        message: { type: 'string', description: 'Optional tag message (creates annotated tag)' }
+      },
+      required: ['project_id', 'tag_name', 'ref']
+    }
+  },
+  {
+    name: 'gitlab_delete_tag',
+    description: 'Delete a tag from the repository',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        tag_name: { type: 'string', description: 'The name of the tag' }
+      },
+      required: ['project_id', 'tag_name']
+    }
+  },
+  {
+    name: 'gitlab_list_releases',
+    description: 'List releases for a project, ordered by released_at',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        per_page: { type: 'number', description: 'Number of results per page (max 100)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      },
+      required: ['project_id']
+    }
+  },
+  {
+    name: 'gitlab_get_release',
+    description: 'Get details of a specific release by its tag name',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        tag_name: { type: 'string', description: 'The tag name of the release' }
+      },
+      required: ['project_id', 'tag_name']
+    }
+  },
+  {
+    name: 'gitlab_list_repository_tree',
+    description: 'List files and directories in a repository. Returns name, type (blob/tree), path, and mode.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        path: { type: 'string', description: 'Path inside the repository to list (default: root)' },
+        ref: { type: 'string', description: 'The branch name, tag, or commit SHA' },
+        recursive: { type: 'boolean', description: 'If true, list files recursively' },
+        per_page: { type: 'number', description: 'Number of results per page (max 100)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      },
+      required: ['project_id']
+    }
+  },
+  {
+    name: 'gitlab_list_merge_request_commits',
+    description: 'List commits included in a merge request',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' }
+      },
+      required: ['project_id', 'merge_request_iid']
+    }
+  },
+
+  // MR approvals, notes, merge, search
+  {
+    name: 'gitlab_get_merge_request_approvals',
+    description: 'Get the approval state of a merge request including who approved and approval rules',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' }
+      },
+      required: ['project_id', 'merge_request_iid']
+    }
+  },
+  {
+    name: 'gitlab_list_merge_request_notes',
+    description: 'List all notes/comments on a merge request',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        per_page: { type: 'number', description: 'Number of results per page (max 100)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      },
+      required: ['project_id', 'merge_request_iid']
+    }
+  },
+  {
+    name: 'gitlab_merge_merge_request',
+    description: 'Accept and merge a merge request',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        merge_commit_message: { type: 'string', description: 'Custom merge commit message' },
+        squash_commit_message: { type: 'string', description: 'Custom squash commit message' },
+        squash: { type: 'boolean', description: 'If true, squash all commits into one' },
+        should_remove_source_branch: { type: 'boolean', description: 'If true, remove the source branch after merge' },
+        merge_when_pipeline_succeeds: { type: 'boolean', description: 'If true, merge when the pipeline succeeds' },
+        sha: { type: 'string', description: 'Expected HEAD SHA of the source branch; merge fails if different' }
+      },
+      required: ['project_id', 'merge_request_iid']
+    }
+  },
+  {
+    name: 'gitlab_search',
+    description: 'Search across GitLab globally, within a group, or within a project. Supports searching projects, issues, merge_requests, milestones, snippet_titles, wiki_blobs, commits, blobs, notes, and users.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        scope: {
+          type: 'string',
+          description: 'The scope to search in',
+          enum: ['projects', 'issues', 'merge_requests', 'milestones', 'snippet_titles', 'wiki_blobs', 'commits', 'blobs', 'notes', 'users']
+        },
+        search: { type: 'string', description: 'The search query' },
+        project_id: { type: 'string', description: 'Optional: scope search to a specific project' },
+        group_id: { type: 'string', description: 'Optional: scope search to a specific group' }
+      },
+      required: ['scope', 'search']
+    }
+  },
+
+  // Issues extended tools
+  {
+    name: 'gitlab_get_issue',
+    description: 'Get details of a specific issue',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        issue_iid: { type: 'number', description: 'The internal ID of the issue' }
+      },
+      required: ['project_id', 'issue_iid']
+    }
+  },
+  {
+    name: 'gitlab_create_issue',
+    description: 'Create a new issue in a project',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        title: { type: 'string', description: 'The title of the issue' },
+        description: { type: 'string', description: 'The description of the issue (supports Markdown)' },
+        assignee_ids: { type: 'array', description: 'Array of user IDs to assign', items: { type: 'number' } },
+        labels: { type: 'string', description: 'Comma-separated list of label names' },
+        milestone_id: { type: 'number', description: 'The milestone ID to associate' },
+        confidential: { type: 'boolean', description: 'Whether the issue is confidential' }
+      },
+      required: ['project_id', 'title']
+    }
+  },
+  {
+    name: 'gitlab_update_issue',
+    description: 'Update an existing issue',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        issue_iid: { type: 'number', description: 'The internal ID of the issue' },
+        title: { type: 'string', description: 'New title' },
+        description: { type: 'string', description: 'New description' },
+        assignee_ids: { type: 'array', description: 'Array of user IDs to assign', items: { type: 'number' } },
+        labels: { type: 'string', description: 'Comma-separated list of label names' },
+        milestone_id: { type: 'number', description: 'The milestone ID to associate' },
+        state_event: { type: 'string', description: 'State change event', enum: ['close', 'reopen'] },
+        confidential: { type: 'boolean', description: 'Whether the issue is confidential' }
+      },
+      required: ['project_id', 'issue_iid']
+    }
+  },
+  {
+    name: 'gitlab_delete_issue',
+    description: 'Delete an issue (requires admin or owner permissions)',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        issue_iid: { type: 'number', description: 'The internal ID of the issue' }
+      },
+      required: ['project_id', 'issue_iid']
+    }
+  },
+  {
+    name: 'gitlab_list_issue_notes',
+    description: 'List notes/comments on an issue',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        issue_iid: { type: 'number', description: 'The internal ID of the issue' },
+        per_page: { type: 'number', description: 'Number of results per page (max 100)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      },
+      required: ['project_id', 'issue_iid']
+    }
+  },
+  {
+    name: 'gitlab_create_issue_note',
+    description: 'Add a comment/note to an issue',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        issue_iid: { type: 'number', description: 'The internal ID of the issue' },
+        body: { type: 'string', description: 'The content of the note/comment' },
+        internal: { type: 'boolean', description: 'If true, creates an internal note (visible only to project members)' }
+      },
+      required: ['project_id', 'issue_iid', 'body']
+    }
+  },
+  {
+    name: 'gitlab_list_labels',
+    description: 'List project labels',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        search: { type: 'string', description: 'Search labels by name' },
+        per_page: { type: 'number', description: 'Number of results per page (max 100)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      },
+      required: ['project_id']
+    }
+  },
+  {
+    name: 'gitlab_list_milestones',
+    description: 'List project milestones',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        state: { type: 'string', description: 'Filter by state', enum: ['active', 'closed'] },
+        search: { type: 'string', description: 'Search milestones by title' },
+        per_page: { type: 'number', description: 'Number of results per page (max 100)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      },
+      required: ['project_id']
+    }
+  },
+  {
+    name: 'gitlab_list_snippets',
+    description: 'List project snippets',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        per_page: { type: 'number', description: 'Number of results per page (max 100)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      },
+      required: ['project_id']
+    }
+  },
+  {
+    name: 'gitlab_get_snippet',
+    description: 'Get details of a specific project snippet',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        snippet_id: { type: 'number', description: 'The ID of the snippet' }
+      },
+      required: ['project_id', 'snippet_id']
+    }
+  },
+
+  // Environments & Deployments tools
+  {
+    name: 'gitlab_list_environments',
+    description: 'List environments for a project',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        name: { type: 'string', description: 'Filter by exact environment name' },
+        search: { type: 'string', description: 'Search environments by name' },
+        states: { type: 'string', description: 'Filter by state', enum: ['available', 'stopping', 'stopped'] },
+        per_page: { type: 'number', description: 'Number of results per page (max 100)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      },
+      required: ['project_id']
+    }
+  },
+  {
+    name: 'gitlab_get_environment',
+    description: 'Get details of a specific environment including last deployment info',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        environment_id: { type: 'number', description: 'The ID of the environment' }
+      },
+      required: ['project_id', 'environment_id']
+    }
+  },
+  {
+    name: 'gitlab_list_deployments',
+    description: 'List deployments for a project with optional filters',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        environment: { type: 'string', description: 'Filter by environment name' },
+        status: { type: 'string', description: 'Filter by deployment status', enum: ['created', 'running', 'success', 'failed', 'canceled', 'blocked'] },
+        order_by: { type: 'string', description: 'Order by field', enum: ['id', 'iid', 'created_at', 'updated_at', 'finished_at', 'ref'] },
+        sort: { type: 'string', description: 'Sort direction', enum: ['asc', 'desc'] },
+        per_page: { type: 'number', description: 'Number of results per page (max 100)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      },
+      required: ['project_id']
+    }
+  },
+  {
+    name: 'gitlab_get_deployment',
+    description: 'Get details of a specific deployment',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        deployment_id: { type: 'number', description: 'The ID of the deployment' }
+      },
+      required: ['project_id', 'deployment_id']
+    }
   }
 ];
-
-// Export lists of tools by category for easier selection
-export const repositoryTools = toolDefinitions.slice(0, 12);
-export const integrationTools = toolDefinitions.slice(10, 20);
-export const cicdTools = toolDefinitions.slice(20, 31);
-export const usersGroupsTools = toolDefinitions.slice(31);

@@ -188,6 +188,155 @@ Add a user to a project
 | `user_id` | `number` | Yes | The ID of the user |
 | `access_level` | `number` | Yes | Access level (10=Guest, 20=Reporter, 30=Developer, 40=Maintainer, 50=Owner) |
 
+### gitlab_list_repository_tree
+
+List files and directories in a repository. Returns name, type (blob/tree), path, and mode.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `path` | `string` | No | Path inside the repository to list (default: root) |
+| `ref` | `string` | No | The branch name, tag, or commit SHA |
+| `recursive` | `boolean` | No | If true, list files recursively |
+| `per_page` | `number` | No | Number of results per page (max 100) |
+| `page` | `number` | No | Page number for pagination |
+
+### gitlab_list_merge_request_commits
+
+List commits included in a merge request
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+
+### gitlab_get_merge_request_approvals
+
+Get the approval state of a merge request including who approved and approval rules
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+
+### gitlab_list_merge_request_notes
+
+List all notes/comments on a merge request
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `per_page` | `number` | No | Number of results per page (max 100) |
+| `page` | `number` | No | Page number for pagination |
+
+### gitlab_merge_merge_request
+
+Accept and merge a merge request
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `merge_commit_message` | `string` | No | Custom merge commit message |
+| `squash_commit_message` | `string` | No | Custom squash commit message |
+| `squash` | `boolean` | No | If true, squash all commits into one |
+| `should_remove_source_branch` | `boolean` | No | If true, remove the source branch after merge |
+| `merge_when_pipeline_succeeds` | `boolean` | No | If true, merge when the pipeline succeeds |
+| `sha` | `string` | No | Expected HEAD SHA of the source branch; merge fails if different |
+
+### gitlab_get_issue
+
+Get details of a specific issue
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `issue_iid` | `number` | Yes | The internal ID of the issue |
+
+### gitlab_create_issue
+
+Create a new issue in a project
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `title` | `string` | Yes | The title of the issue |
+| `description` | `string` | No | The description of the issue (supports Markdown) |
+| `assignee_ids` | `array` | No | Array of user IDs to assign |
+| `labels` | `string` | No | Comma-separated list of label names |
+| `milestone_id` | `number` | No | The milestone ID to associate |
+| `confidential` | `boolean` | No | Whether the issue is confidential |
+
+### gitlab_update_issue
+
+Update an existing issue
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `issue_iid` | `number` | Yes | The internal ID of the issue |
+| `title` | `string` | No | New title |
+| `description` | `string` | No | New description |
+| `assignee_ids` | `array` | No | Array of user IDs to assign |
+| `labels` | `string` | No | Comma-separated list of label names |
+| `milestone_id` | `number` | No | The milestone ID to associate |
+| `state_event` | `string` | No | State change event |
+| `confidential` | `boolean` | No | Whether the issue is confidential |
+
+### gitlab_delete_issue
+
+Delete an issue (requires admin or owner permissions)
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `issue_iid` | `number` | Yes | The internal ID of the issue |
+
+### gitlab_list_issue_notes
+
+List notes/comments on an issue
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `issue_iid` | `number` | Yes | The internal ID of the issue |
+| `per_page` | `number` | No | Number of results per page (max 100) |
+| `page` | `number` | No | Page number for pagination |
+
+### gitlab_create_issue_note
+
+Add a comment/note to an issue
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `issue_iid` | `number` | Yes | The internal ID of the issue |
+| `body` | `string` | Yes | The content of the note/comment |
+| `internal` | `boolean` | No | If true, creates an internal note (visible only to project members) |
+
 ## Integrations & Webhooks
 
 ### gitlab_list_integrations
@@ -524,7 +673,178 @@ Delete a CI/CD variable for a group
 | `key` | `string` | Yes | The key of the variable |
 | `filter` | `object` | No | Filter by environment_scope when multiple variables share the same key |
 
+### gitlab_list_pipelines
+
+List pipelines in a GitLab project. Returns pipeline ID, status, ref, SHA, and timestamps.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `status` | `string` | No | Filter by status |
+| `ref` | `string` | No | Filter by branch or tag name |
+| `source` | `string` | No | Filter by pipeline source (push, web, trigger, schedule, api, merge_request_event, etc.) |
+| `per_page` | `number` | No | Number of results per page (max 100) |
+| `page` | `number` | No | Page number for pagination |
+
+### gitlab_get_pipeline
+
+Get details of a specific pipeline including status, duration, coverage, and user info
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `pipeline_id` | `number` | Yes | The ID of the pipeline |
+
+### gitlab_create_pipeline
+
+Create a new pipeline for a branch or tag
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `ref` | `string` | Yes | The branch or tag name to create the pipeline for |
+| `variables` | `array` | No | Array of variables for the pipeline |
+
+### gitlab_cancel_pipeline
+
+Cancel all running/pending jobs in a pipeline
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `pipeline_id` | `number` | Yes | The ID of the pipeline |
+
+### gitlab_retry_pipeline
+
+Retry all failed jobs in a pipeline
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `pipeline_id` | `number` | Yes | The ID of the pipeline |
+
+### gitlab_delete_pipeline
+
+Delete a pipeline and all its jobs
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `pipeline_id` | `number` | Yes | The ID of the pipeline |
+
+### gitlab_list_pipeline_jobs
+
+List jobs for a specific pipeline. Returns job name, status, stage, duration, and runner info.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `pipeline_id` | `number` | Yes | The ID of the pipeline |
+| `scope` | `string` | No | Filter by job scope |
+| `per_page` | `number` | No | Number of results per page (max 100) |
+| `page` | `number` | No | Page number for pagination |
+
+### gitlab_list_pipeline_bridges
+
+List bridge jobs (downstream pipeline triggers) for a pipeline
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `pipeline_id` | `number` | Yes | The ID of the pipeline |
+| `scope` | `string` | No | Filter by job scope |
+| `per_page` | `number` | No | Number of results per page (max 100) |
+| `page` | `number` | No | Page number for pagination |
+
 ## User & Group Management
+
+### gitlab_list_group_cicd_variables
+
+List CI/CD variables for a group
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `group_id` | `string` | Yes | The ID or URL-encoded path of the group |
+
+### gitlab_get_group_cicd_variable
+
+Get a specific CI/CD variable for a group
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `group_id` | `string` | Yes | The ID or URL-encoded path of the group |
+| `key` | `string` | Yes | The key of the variable |
+| `filter` | `object` | No | Filter by environment_scope when multiple variables share the same key |
+
+### gitlab_create_group_cicd_variable
+
+Create a new CI/CD variable for a group
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `group_id` | `string` | Yes | The ID or URL-encoded path of the group |
+| `key` | `string` | Yes | The key of the variable |
+| `value` | `string` | Yes | The value of the variable |
+| `protected` | `boolean` | No | Whether the variable is protected |
+| `masked` | `boolean` | No | Whether the variable is masked |
+| `masked_and_hidden` | `boolean` | No | Whether the variable is masked and hidden. Default: false |
+| `raw` | `boolean` | No | Whether the variable is treated as a raw string. When true, variables in the value are not expanded. Default: false |
+| `description` | `string` | No | The description of the variable (max 255 characters) |
+| `variable_type` | `string` | No | The type of the variable: env_var (default) or file |
+| `environment_scope` | `string` | No | The environment scope of the variable. Premium and Ultimate only |
+
+### gitlab_update_group_cicd_variable
+
+Update a CI/CD variable for a group
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `group_id` | `string` | Yes | The ID or URL-encoded path of the group |
+| `key` | `string` | Yes | The key of the variable |
+| `value` | `string` | Yes | The value of the variable |
+| `protected` | `boolean` | No | Whether the variable is protected |
+| `masked` | `boolean` | No | Whether the variable is masked |
+| `raw` | `boolean` | No | Whether the variable is treated as a raw string. When true, variables in the value are not expanded. Default: false |
+| `description` | `string` | No | The description of the variable (max 255 characters) |
+| `variable_type` | `string` | No | The type of the variable: env_var (default) or file |
+| `environment_scope` | `string` | No | The environment scope of the variable. Premium and Ultimate only |
+| `filter` | `object` | No | Filter by environment_scope when multiple variables share the same key |
+
+### gitlab_delete_group_cicd_variable
+
+Delete a CI/CD variable for a group
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `group_id` | `string` | Yes | The ID or URL-encoded path of the group |
+| `key` | `string` | Yes | The key of the variable |
+| `filter` | `object` | No | Filter by environment_scope when multiple variables share the same key |
 
 ### gitlab_list_users
 

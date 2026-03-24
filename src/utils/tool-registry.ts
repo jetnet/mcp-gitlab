@@ -7,14 +7,26 @@ import { ToolRegistry } from "./handler-types.js";
 // Import repository handlers
 import * as repoHandlers from "../handlers/repository-handlers.js";
 
+// Import repository extended handlers
+import * as repoExtHandlers from "../handlers/repository-extended-handlers.js";
+
 // Import integration handlers
 import * as integrationHandlers from "../handlers/integration-handlers.js";
 
 // Import CI/CD handlers
 import * as cicdHandlers from "../handlers/cicd-handlers.js";
 
+// Import pipeline handlers
+import * as pipelineHandlers from "../handlers/pipeline-handlers.js";
+
 // Import users and groups handlers
 import * as usersGroupsHandlers from "../handlers/users-groups-handlers.js";
+
+// Import issues extended handlers
+import * as issuesExtHandlers from "../handlers/issues-extended-handlers.js";
+
+// Import environments handlers
+import * as environmentsHandlers from "../handlers/environments-handlers.js";
 
 /**
  * Registry of all available tools mapped to their handler functions
@@ -34,6 +46,22 @@ export const toolRegistry: ToolRegistry = {
   gitlab_list_issues: repoHandlers.listIssues,
   gitlab_get_repository_file: repoHandlers.getRepositoryFile,
   gitlab_compare_branches: repoHandlers.compareBranches,
+  gitlab_get_merge_request_approvals: repoHandlers.getMergeRequestApprovals,
+  gitlab_list_merge_request_notes: repoHandlers.listMergeRequestNotes,
+  gitlab_merge_merge_request: repoHandlers.mergeMergeRequest,
+  gitlab_search: repoHandlers.search,
+
+  // Repository extended tools
+  gitlab_list_commits: repoExtHandlers.listCommits,
+  gitlab_get_commit: repoExtHandlers.getCommit,
+  gitlab_list_tags: repoExtHandlers.listTags,
+  gitlab_get_tag: repoExtHandlers.getTag,
+  gitlab_create_tag: repoExtHandlers.createTag,
+  gitlab_delete_tag: repoExtHandlers.deleteTag,
+  gitlab_list_releases: repoExtHandlers.listReleases,
+  gitlab_get_release: repoExtHandlers.getRelease,
+  gitlab_list_repository_tree: repoExtHandlers.listRepositoryTree,
+  gitlab_list_merge_request_commits: repoExtHandlers.listMergeRequestCommits,
 
   // Integration tools
   gitlab_list_integrations: integrationHandlers.listIntegrations,
@@ -64,6 +92,38 @@ export const toolRegistry: ToolRegistry = {
   gitlab_create_group_cicd_variable: cicdHandlers.createGroupCiCdVariable,
   gitlab_update_group_cicd_variable: cicdHandlers.updateGroupCiCdVariable,
   gitlab_delete_group_cicd_variable: cicdHandlers.deleteGroupCiCdVariable,
+
+  // Pipeline tools
+  gitlab_list_pipelines: pipelineHandlers.listPipelines,
+  gitlab_get_pipeline: pipelineHandlers.getPipeline,
+  gitlab_create_pipeline: pipelineHandlers.createPipeline,
+  gitlab_cancel_pipeline: pipelineHandlers.cancelPipeline,
+  gitlab_retry_pipeline: pipelineHandlers.retryPipeline,
+  gitlab_delete_pipeline: pipelineHandlers.deletePipeline,
+  gitlab_list_pipeline_jobs: pipelineHandlers.listPipelineJobs,
+  gitlab_get_job: pipelineHandlers.getJob,
+  gitlab_get_job_log: pipelineHandlers.getJobLog,
+  gitlab_cancel_job: pipelineHandlers.cancelJob,
+  gitlab_retry_job: pipelineHandlers.retryJob,
+  gitlab_list_pipeline_bridges: pipelineHandlers.listPipelineBridges,
+
+  // Issues extended tools
+  gitlab_get_issue: issuesExtHandlers.getIssue,
+  gitlab_create_issue: issuesExtHandlers.createIssue,
+  gitlab_update_issue: issuesExtHandlers.updateIssue,
+  gitlab_delete_issue: issuesExtHandlers.deleteIssue,
+  gitlab_list_issue_notes: issuesExtHandlers.listIssueNotes,
+  gitlab_create_issue_note: issuesExtHandlers.createIssueNote,
+  gitlab_list_labels: issuesExtHandlers.listLabels,
+  gitlab_list_milestones: issuesExtHandlers.listMilestones,
+  gitlab_list_snippets: issuesExtHandlers.listSnippets,
+  gitlab_get_snippet: issuesExtHandlers.getSnippet,
+
+  // Environments & Deployments tools
+  gitlab_list_environments: environmentsHandlers.listEnvironments,
+  gitlab_get_environment: environmentsHandlers.getEnvironment,
+  gitlab_list_deployments: environmentsHandlers.listDeployments,
+  gitlab_get_deployment: environmentsHandlers.getDeployment,
 
   // Users and Groups tools
   gitlab_list_users: usersGroupsHandlers.listUsers,

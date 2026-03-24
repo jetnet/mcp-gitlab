@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(echo $APPDATA)",
+      "Bash(echo $HOME)",
+      "Read(//c/Users/konstantin.avdeev/.config/**)",
+      "Read(//c/Users/konstantin.avdeev/.claude/**)",
+      "Bash(npm search:*)",
+      "Bash(npm view:*)",
+      "Bash(claude mcp:*)"
+    ]
+  }
+}

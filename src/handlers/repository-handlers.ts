@@ -240,4 +240,83 @@ export const createMergeRequestNoteInternal: ToolHandler = async (params, contex
     { body, internal: internal === true }
   );
   return formatResponse(response.data);
+};
+
+/**
+ * Get merge request approvals handler
+ */
+export const getMergeRequestApprovals: ToolHandler = async (params, context) => {
+  const { project_id, merge_request_iid } = params.arguments || {};
+  if (!project_id || !merge_request_iid) {
+    throw new McpError(ErrorCode.InvalidParams, 'project_id and merge_request_iid are required');
+  }
+
+  const response = await context.axiosInstance.get(
+    `/projects/${encodeURIComponent(String(project_id))}/merge_requests/${merge_request_iid}/approvals`
+  );
+  return formatResponse(response.data);
+};
+
+/**
+ * List merge request notes handler
+ */
+export const listMergeRequestNotes: ToolHandler = async (params, context) => {
+  const { project_id, merge_request_iid, per_page, page } = params.arguments || {};
+  if (!project_id || !merge_request_iid) {
+    throw new McpError(ErrorCode.InvalidParams, 'project_id and merge_request_iid are required');
+  }
+
+  const response = await context.axiosInstance.get(
+    `/projects/${encodeURIComponent(String(project_id))}/merge_requests/${merge_request_iid}/notes`,
+    { params: { per_page: per_page || 20, page } }
+  );
+  return formatResponse(response.data);
+};
+
+/**
+ * Merge (accept) a merge request handler
+ */
+export const mergeMergeRequest: ToolHandler = async (params, context) => {
+  const { project_id, merge_request_iid, merge_commit_message, squash_commit_message, squash, should_remove_source_branch, merge_when_pipeline_succeeds, sha } = params.arguments || {};
+  if (!project_id || !merge_request_iid) {
+    throw new McpError(ErrorCode.InvalidParams, 'project_id and merge_request_iid are required');
+  }
+
+  const body: any = {};
+  if (merge_commit_message !== undefined) body.merge_commit_message = merge_commit_message;
+  if (squash_commit_message !== undefined) body.squash_commit_message = squash_commit_message;
+  if (squash !== undefined) body.squash = squash;
+  if (should_remove_source_branch !== undefined) body.should_remove_source_branch = should_remove_source_branch;
+  if (merge_when_pipeline_succeeds !== undefined) body.merge_when_pipeline_succeeds = merge_when_pipeline_succeeds;
+  if (sha !== undefined) body.sha = sha;
+
+  const response = await context.axiosInstance.put(
+    `/projects/${encodeURIComponent(String(project_id))}/merge_requests/${merge_request_iid}/merge`,
+    body
+  );
+  return formatResponse(response.data);
+};
+
+/**
+ * Search across GitLab handler
+ */
+export const search: ToolHandler = async (params, context) => {
+  const { scope, search: searchQuery, project_id, group_id } = params.arguments || {};
+  if (!scope || !searchQuery) {
+    throw new McpError(ErrorCode.InvalidParams, 'scope and search are required');
+  }
+
+  let url = '';
+  if (project_id) {
+    url = `/projects/${encodeURIComponent(String(project_id))}/search`;
+  } else if (group_id) {
+    url = `/groups/${encodeURIComponent(String(group_id))}/search`;
+  } else {
+    url = '/search';
+  }
+
+  const response = await context.axiosInstance.get(url, {
+    params: { scope, search: searchQuery }
+  });
+  return formatResponse(response.data);
 }; 
