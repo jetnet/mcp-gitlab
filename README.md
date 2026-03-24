@@ -13,21 +13,27 @@ This MCP server provides comprehensive tools for interacting with GitLab reposit
 ### Core Repository Features
 - Listing projects and retrieving details
 - Managing branches and repositories
-- Working with merge requests and diffs
+- Working with merge requests (create, update, merge, approve, review notes)
 - Adding comments and internal notes to merge requests
-- Updating merge request attributes
-- Listing and working with issues
+- Listing and working with issues (full CRUD, notes, labels, milestones)
 - Getting and comparing repository file contents
+- Browsing repository tree, commits, tags, and releases
+- Global, group, and project-scoped search
+
+### Pipelines & CI/CD
+- Listing, creating, cancelling, retrying, and deleting pipelines
+- Viewing pipeline jobs, job details, and job logs
+- Working with pipeline trigger tokens and bridge jobs
+- Managing CI/CD variables (project and group level)
 
 ### Project Settings & Integrations
 - Managing project integrations and services
 - Configuring and controlling Slack integration
 - Setting up, updating, and testing webhooks
 
-### CI/CD Management
-- Working with pipeline trigger tokens
-- Managing CI/CD variables
-- Triggering and controlling pipelines
+### Environments & Deployments
+- Listing and inspecting environments
+- Viewing deployment history and details
 
 ### User & Group Administration
 - Listing and managing users
@@ -119,7 +125,7 @@ Replace `YOUR_GITLAB_API_TOKEN` with your actual GitLab API token. You can gener
 
 For full parameter details, see [TOOLS.md](./TOOLS.md).
 
-### Repository Management (14 tools)
+### Repository Management (18 tools)
 
 | Tool | Description |
 |------|-------------|
@@ -133,12 +139,70 @@ For full parameter details, see [TOOLS.md](./TOOLS.md).
 | `gitlab_create_merge_request_note` | Add a comment to a merge request |
 | `gitlab_create_merge_request_note_internal` | Add an internal note to a merge request |
 | `gitlab_update_merge_request` | Update a merge request title and description |
+| `gitlab_get_merge_request_approvals` | Get the approval state of a merge request |
+| `gitlab_list_merge_request_notes` | List all notes/comments on a merge request |
+| `gitlab_list_merge_request_commits` | List commits in a merge request |
+| `gitlab_merge_merge_request` | Accept and merge a merge request |
 | `gitlab_list_issues` | List issues in a project |
 | `gitlab_get_repository_file` | Get content of a file in a repository |
 | `gitlab_compare_branches` | Compare branches, tags or commits |
-| `gitlab_list_project_members` | List members of a project |
+| `gitlab_list_repository_tree` | List files and directories in a repository |
 
-### Integrations & Webhooks (8 tools)
+### Commits, Tags & Releases (8 tools)
+
+| Tool | Description |
+|------|-------------|
+| `gitlab_list_commits` | List repository commits with filters |
+| `gitlab_get_commit` | Get details of a specific commit |
+| `gitlab_list_tags` | List repository tags |
+| `gitlab_get_tag` | Get details of a specific tag |
+| `gitlab_create_tag` | Create a new tag |
+| `gitlab_delete_tag` | Delete a tag |
+| `gitlab_list_releases` | List releases for a project |
+| `gitlab_get_release` | Get details of a specific release |
+
+### Issues Extended (10 tools)
+
+| Tool | Description |
+|------|-------------|
+| `gitlab_get_issue` | Get details of a specific issue |
+| `gitlab_create_issue` | Create a new issue |
+| `gitlab_update_issue` | Update an existing issue |
+| `gitlab_delete_issue` | Delete an issue |
+| `gitlab_list_issue_notes` | List notes/comments on an issue |
+| `gitlab_create_issue_note` | Add a comment/note to an issue |
+| `gitlab_list_labels` | List project labels |
+| `gitlab_list_milestones` | List project milestones |
+| `gitlab_list_snippets` | List project snippets |
+| `gitlab_get_snippet` | Get details of a specific snippet |
+
+### Pipelines & Jobs (12 tools)
+
+| Tool | Description |
+|------|-------------|
+| `gitlab_list_pipelines` | List pipelines in a project |
+| `gitlab_get_pipeline` | Get details of a specific pipeline |
+| `gitlab_create_pipeline` | Create a new pipeline for a branch or tag |
+| `gitlab_cancel_pipeline` | Cancel all running/pending jobs in a pipeline |
+| `gitlab_retry_pipeline` | Retry all failed jobs in a pipeline |
+| `gitlab_delete_pipeline` | Delete a pipeline and all its jobs |
+| `gitlab_list_pipeline_jobs` | List jobs for a specific pipeline |
+| `gitlab_get_job` | Get details of a single job |
+| `gitlab_get_job_log` | Get the log (trace) output of a job |
+| `gitlab_cancel_job` | Cancel a running job |
+| `gitlab_retry_job` | Retry a failed or cancelled job |
+| `gitlab_list_pipeline_bridges` | List bridge jobs (downstream triggers) |
+
+### Environments & Deployments (4 tools)
+
+| Tool | Description |
+|------|-------------|
+| `gitlab_list_environments` | List environments for a project |
+| `gitlab_get_environment` | Get details of a specific environment |
+| `gitlab_list_deployments` | List deployments for a project |
+| `gitlab_get_deployment` | Get details of a specific deployment |
+
+### Integrations & Webhooks (10 tools)
 
 | Tool | Description |
 |------|-------------|
@@ -153,7 +217,7 @@ For full parameter details, see [TOOLS.md](./TOOLS.md).
 | `gitlab_delete_webhook` | Delete a webhook |
 | `gitlab_test_webhook` | Test a webhook |
 
-### CI/CD Management (18 tools)
+### CI/CD Management (17 tools)
 
 | Tool | Description |
 |------|-------------|
@@ -174,9 +238,7 @@ For full parameter details, see [TOOLS.md](./TOOLS.md).
 | `gitlab_update_group_cicd_variable` | Update a group CI/CD variable |
 | `gitlab_delete_group_cicd_variable` | Delete a group CI/CD variable |
 
-> CI/CD variable tools support all GitLab API parameters including `raw`, `masked`, `masked_and_hidden`, `description`, `variable_type`, `environment_scope`, and `filter`.
-
-### User & Group Administration (6 tools)
+### User & Group Administration (8 tools)
 
 | Tool | Description |
 |------|-------------|
@@ -186,7 +248,14 @@ For full parameter details, see [TOOLS.md](./TOOLS.md).
 | `gitlab_get_group` | Get details of a specific group |
 | `gitlab_list_group_members` | List members of a group |
 | `gitlab_add_group_member` | Add a user to a group |
+| `gitlab_list_project_members` | List members of a project |
 | `gitlab_add_project_member` | Add a user to a project |
+
+### Search (1 tool)
+
+| Tool | Description |
+|------|-------------|
+| `gitlab_search` | Search across GitLab (globally, group, or project scoped) |
 
 ## Example Usage
 
