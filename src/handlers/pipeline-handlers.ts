@@ -200,3 +200,30 @@ export const listPipelineBridges: ToolHandler = async (params, context) => {
   );
   return formatResponse(response.data);
 };
+
+/**
+ * Download job artifacts handler
+ * Returns artifact metadata/info since binary download via MCP is impractical
+ */
+export const getJobArtifacts: ToolHandler = async (params, context) => {
+  const { project_id, job_id } = params.arguments || {};
+  if (!project_id || !job_id) {
+    throw new McpError(ErrorCode.InvalidParams, 'project_id and job_id are required');
+  }
+
+  // Get the job details which includes artifacts info
+  const response = await context.axiosInstance.get(
+    `/projects/${encodeURIComponent(String(project_id))}/jobs/${job_id}`
+  );
+  
+  const job = response.data;
+  const artifactsInfo = {
+    job_id: job.id,
+    job_name: job.name,
+    artifacts: job.artifacts || [],
+    artifacts_file: job.artifacts_file || null,
+    artifacts_expire_at: job.artifacts_expire_at || null,
+    download_url: `${context.axiosInstance.defaults.baseURL}/projects/${encodeURIComponent(String(project_id))}/jobs/${job_id}/artifacts`
+  };
+  return formatResponse(artifactsInfo);
+};

@@ -1723,5 +1723,448 @@ export const toolDefinitions = [
       },
       required: ['project_id', 'deployment_id']
     }
+  },
+
+  // Branch tools
+  {
+    name: 'gitlab_create_branch',
+    description: 'Create a new branch in a repository',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        branch: { type: 'string', description: 'Name of the new branch' },
+        ref: { type: 'string', description: 'Branch name or commit SHA to create the branch from' }
+      },
+      required: ['project_id', 'branch', 'ref']
+    }
+  },
+  {
+    name: 'gitlab_delete_branch',
+    description: 'Delete a branch from a repository. Cannot delete the default branch or protected branches.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        branch: { type: 'string', description: 'Name of the branch to delete' }
+      },
+      required: ['project_id', 'branch']
+    }
+  },
+
+  // Repository file CRUD tools
+  {
+    name: 'gitlab_create_repository_file',
+    description: 'Create a new file in a repository. The file content is committed to the specified branch.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        file_path: { type: 'string', description: 'URL-encoded full path to the new file (e.g. lib%2Fclass%2Erb)' },
+        branch: { type: 'string', description: 'Name of the branch to commit to' },
+        content: { type: 'string', description: 'File content' },
+        commit_message: { type: 'string', description: 'Commit message' },
+        author_email: { type: 'string', description: 'Commit author email address' },
+        author_name: { type: 'string', description: 'Commit author name' },
+        encoding: { type: 'string', description: 'File encoding: text (default) or base64', enum: ['text', 'base64'] },
+        start_branch: { type: 'string', description: 'Name of the base branch to create the new branch from' }
+      },
+      required: ['project_id', 'file_path', 'branch', 'content', 'commit_message']
+    }
+  },
+  {
+    name: 'gitlab_update_repository_file',
+    description: 'Update an existing file in a repository. The changes are committed to the specified branch.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        file_path: { type: 'string', description: 'URL-encoded full path to the file' },
+        branch: { type: 'string', description: 'Name of the branch to commit to' },
+        content: { type: 'string', description: 'New file content' },
+        commit_message: { type: 'string', description: 'Commit message' },
+        author_email: { type: 'string', description: 'Commit author email address' },
+        author_name: { type: 'string', description: 'Commit author name' },
+        encoding: { type: 'string', description: 'File encoding: text (default) or base64', enum: ['text', 'base64'] },
+        last_commit_id: { type: 'string', description: 'Last known file commit ID for optimistic locking' },
+        start_branch: { type: 'string', description: 'Name of the base branch to create the new branch from' }
+      },
+      required: ['project_id', 'file_path', 'branch', 'content', 'commit_message']
+    }
+  },
+  {
+    name: 'gitlab_delete_repository_file',
+    description: 'Delete a file from a repository. The deletion is committed to the specified branch.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        file_path: { type: 'string', description: 'URL-encoded full path to the file to delete' },
+        branch: { type: 'string', description: 'Name of the branch to commit to' },
+        commit_message: { type: 'string', description: 'Commit message' },
+        author_email: { type: 'string', description: 'Commit author email address' },
+        author_name: { type: 'string', description: 'Commit author name' },
+        last_commit_id: { type: 'string', description: 'Last known file commit ID' },
+        start_branch: { type: 'string', description: 'Name of the base branch' }
+      },
+      required: ['project_id', 'file_path', 'branch', 'commit_message']
+    }
+  },
+
+  // Release CRUD tools
+  {
+    name: 'gitlab_create_release',
+    description: 'Create a new release for a project. Requires at least Developer role.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        tag_name: { type: 'string', description: 'The tag where the release is created from' },
+        name: { type: 'string', description: 'The release name' },
+        description: { type: 'string', description: 'The description of the release (supports Markdown)' },
+        ref: { type: 'string', description: 'If tag_name does not exist, the release is created from ref (commit SHA, branch name, or another tag)' },
+        milestones: { type: 'array', items: { type: 'string' }, description: 'Titles of milestones to associate with the release' },
+        released_at: { type: 'string', description: 'The release date (ISO 8601 format)' }
+      },
+      required: ['project_id', 'tag_name']
+    }
+  },
+  {
+    name: 'gitlab_update_release',
+    description: 'Update an existing release',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        tag_name: { type: 'string', description: 'The tag associated with the release' },
+        name: { type: 'string', description: 'The new release name' },
+        description: { type: 'string', description: 'The new description of the release (supports Markdown)' },
+        milestones: { type: 'array', items: { type: 'string' }, description: 'Titles of milestones to associate with the release' },
+        released_at: { type: 'string', description: 'The release date (ISO 8601 format)' }
+      },
+      required: ['project_id', 'tag_name']
+    }
+  },
+  {
+    name: 'gitlab_delete_release',
+    description: 'Delete a release. Does not delete the associated tag. Requires at least Developer role.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        tag_name: { type: 'string', description: 'The tag associated with the release to delete' }
+      },
+      required: ['project_id', 'tag_name']
+    }
+  },
+
+  // Merge request extended tools
+  {
+    name: 'gitlab_approve_merge_request',
+    description: 'Approve a merge request. Requires sufficient permissions.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        sha: { type: 'string', description: 'The HEAD of the merge request. Optional safety check.' }
+      },
+      required: ['project_id', 'merge_request_iid']
+    }
+  },
+  {
+    name: 'gitlab_unapprove_merge_request',
+    description: 'Unapprove a previously approved merge request',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' }
+      },
+      required: ['project_id', 'merge_request_iid']
+    }
+  },
+  {
+    name: 'gitlab_rebase_merge_request',
+    description: 'Rebase the source branch of a merge request against its target branch',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        skip_ci: { type: 'boolean', description: 'Set to true to skip creating a CI pipeline' }
+      },
+      required: ['project_id', 'merge_request_iid']
+    }
+  },
+
+  // Wiki tools
+  {
+    name: 'gitlab_list_wiki_pages',
+    description: 'List all wiki pages for a project',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        with_content: { type: 'boolean', description: 'Include wiki page content in the response' }
+      },
+      required: ['project_id']
+    }
+  },
+  {
+    name: 'gitlab_get_wiki_page',
+    description: 'Get a specific wiki page by its slug',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        slug: { type: 'string', description: 'URL-encoded slug of the wiki page (e.g. dir%2Fpage_name)' },
+        render_html: { type: 'boolean', description: 'Return rendered HTML of the wiki page' },
+        version: { type: 'string', description: 'Wiki page version SHA' }
+      },
+      required: ['project_id', 'slug']
+    }
+  },
+  {
+    name: 'gitlab_create_wiki_page',
+    description: 'Create a new wiki page for a project',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        title: { type: 'string', description: 'Title of the wiki page' },
+        content: { type: 'string', description: 'Content of the wiki page' },
+        format: { type: 'string', description: 'Format of the wiki page', enum: ['markdown', 'rdoc', 'asciidoc', 'org'] }
+      },
+      required: ['project_id', 'title', 'content']
+    }
+  },
+  {
+    name: 'gitlab_update_wiki_page',
+    description: 'Update an existing wiki page',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        slug: { type: 'string', description: 'URL-encoded slug of the wiki page' },
+        title: { type: 'string', description: 'New title of the wiki page' },
+        content: { type: 'string', description: 'New content of the wiki page' },
+        format: { type: 'string', description: 'Format of the wiki page', enum: ['markdown', 'rdoc', 'asciidoc', 'org'] }
+      },
+      required: ['project_id', 'slug']
+    }
+  },
+  {
+    name: 'gitlab_delete_wiki_page',
+    description: 'Delete a wiki page',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        slug: { type: 'string', description: 'URL-encoded slug of the wiki page to delete' }
+      },
+      required: ['project_id', 'slug']
+    }
+  },
+
+  // Protected branch tools
+  {
+    name: 'gitlab_list_protected_branches',
+    description: 'List protected branches of a project',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        search: { type: 'string', description: 'Search for specific protected branches' },
+        per_page: { type: 'number', description: 'Number of results per page (max 100)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      },
+      required: ['project_id']
+    }
+  },
+  {
+    name: 'gitlab_get_protected_branch',
+    description: 'Get details of a single protected branch',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        name: { type: 'string', description: 'Name of the protected branch' }
+      },
+      required: ['project_id', 'name']
+    }
+  },
+  {
+    name: 'gitlab_protect_branch',
+    description: 'Protect a repository branch. Sets access levels for push, merge, and unprotect.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        name: { type: 'string', description: 'Name of the branch or wildcard pattern to protect' },
+        push_access_level: { type: 'number', description: 'Access level for push (0=No access, 30=Developer, 40=Maintainer, 60=Admin)' },
+        merge_access_level: { type: 'number', description: 'Access level for merge (0=No access, 30=Developer, 40=Maintainer, 60=Admin)' },
+        unprotect_access_level: { type: 'number', description: 'Access level for unprotect (0=No access, 30=Developer, 40=Maintainer, 60=Admin)' },
+        allow_force_push: { type: 'boolean', description: 'Allow force push to the branch' },
+        code_owner_approval_required: { type: 'boolean', description: 'Require code owner approval (Premium/Ultimate)' }
+      },
+      required: ['project_id', 'name']
+    }
+  },
+  {
+    name: 'gitlab_unprotect_branch',
+    description: 'Unprotect a protected branch',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        name: { type: 'string', description: 'Name of the protected branch to unprotect' }
+      },
+      required: ['project_id', 'name']
+    }
+  },
+
+  // Runner tools
+  {
+    name: 'gitlab_list_runners',
+    description: 'List all runners available to the authenticated user',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', description: 'Type of runners to return', enum: ['instance_type', 'group_type', 'project_type'] },
+        status: { type: 'string', description: 'Status of runners to return', enum: ['online', 'offline', 'stale', 'never_contacted'] },
+        paused: { type: 'boolean', description: 'Filter by paused state' },
+        tag_list: { type: 'string', description: 'Comma-separated list of runner tags to filter by' },
+        per_page: { type: 'number', description: 'Number of results per page (max 100)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      }
+    }
+  },
+  {
+    name: 'gitlab_get_runner',
+    description: 'Get details of a specific runner',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        runner_id: { type: 'number', description: 'The ID of the runner' }
+      },
+      required: ['runner_id']
+    }
+  },
+  {
+    name: 'gitlab_list_project_runners',
+    description: 'List all runners available in a project, including from ancestor groups and instance runners',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        type: { type: 'string', description: 'Type of runners to return', enum: ['instance_type', 'group_type', 'project_type'] },
+        status: { type: 'string', description: 'Status of runners to return', enum: ['online', 'offline', 'stale', 'never_contacted'] },
+        paused: { type: 'boolean', description: 'Filter by paused state' },
+        tag_list: { type: 'string', description: 'Comma-separated list of runner tags to filter by' },
+        per_page: { type: 'number', description: 'Number of results per page (max 100)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      },
+      required: ['project_id']
+    }
+  },
+
+  // Pipeline schedule tools
+  {
+    name: 'gitlab_list_pipeline_schedules',
+    description: 'List all pipeline schedules for a project',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        scope: { type: 'string', description: 'Scope of pipeline schedules', enum: ['active', 'inactive'] },
+        per_page: { type: 'number', description: 'Number of results per page (max 100)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      },
+      required: ['project_id']
+    }
+  },
+  {
+    name: 'gitlab_get_pipeline_schedule',
+    description: 'Get details of a single pipeline schedule',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        pipeline_schedule_id: { type: 'number', description: 'The ID of the pipeline schedule' }
+      },
+      required: ['project_id', 'pipeline_schedule_id']
+    }
+  },
+  {
+    name: 'gitlab_create_pipeline_schedule',
+    description: 'Create a new pipeline schedule for a project',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        description: { type: 'string', description: 'Description of the pipeline schedule' },
+        ref: { type: 'string', description: 'Branch or tag name that triggers the pipeline' },
+        cron: { type: 'string', description: 'Cron schedule expression (e.g. "0 1 * * *")' },
+        cron_timezone: { type: 'string', description: 'Timezone for the cron schedule (default: UTC)' },
+        active: { type: 'boolean', description: 'Whether the schedule is active (default: true)' }
+      },
+      required: ['project_id', 'description', 'ref', 'cron']
+    }
+  },
+  {
+    name: 'gitlab_update_pipeline_schedule',
+    description: 'Update an existing pipeline schedule',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        pipeline_schedule_id: { type: 'number', description: 'The ID of the pipeline schedule' },
+        description: { type: 'string', description: 'Description of the pipeline schedule' },
+        ref: { type: 'string', description: 'Branch or tag name that triggers the pipeline' },
+        cron: { type: 'string', description: 'Cron schedule expression' },
+        cron_timezone: { type: 'string', description: 'Timezone for the cron schedule' },
+        active: { type: 'boolean', description: 'Whether the schedule is active' }
+      },
+      required: ['project_id', 'pipeline_schedule_id']
+    }
+  },
+  {
+    name: 'gitlab_delete_pipeline_schedule',
+    description: 'Delete a pipeline schedule',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        pipeline_schedule_id: { type: 'number', description: 'The ID of the pipeline schedule' }
+      },
+      required: ['project_id', 'pipeline_schedule_id']
+    }
+  },
+  {
+    name: 'gitlab_run_pipeline_schedule',
+    description: 'Run a pipeline schedule immediately. The next scheduled run is not affected.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        pipeline_schedule_id: { type: 'number', description: 'The ID of the pipeline schedule' }
+      },
+      required: ['project_id', 'pipeline_schedule_id']
+    }
+  },
+
+  // Job artifacts tools
+  {
+    name: 'gitlab_get_job_artifacts',
+    description: 'Get job artifacts information including download URL, artifact files, and expiration details',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        job_id: { type: 'number', description: 'The ID of the job' }
+      },
+      required: ['project_id', 'job_id']
+    }
   }
 ];

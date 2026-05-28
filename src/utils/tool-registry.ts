@@ -28,6 +28,27 @@ import * as issuesExtHandlers from "../handlers/issues-extended-handlers.js";
 // Import environments handlers
 import * as environmentsHandlers from "../handlers/environments-handlers.js";
 
+// Import branch handlers
+import * as branchHandlers from "../handlers/branch-handlers.js";
+
+// Import repository files handlers
+import * as repoFilesHandlers from "../handlers/repository-files-handlers.js";
+
+// Import wiki handlers
+import * as wikiHandlers from "../handlers/wiki-handlers.js";
+
+// Import protected branch handlers
+import * as protectedBranchHandlers from "../handlers/protected-branch-handlers.js";
+
+// Import runner handlers
+import * as runnerHandlers from "../handlers/runner-handlers.js";
+
+// Import pipeline schedule handlers
+import * as pipelineScheduleHandlers from "../handlers/pipeline-schedule-handlers.js";
+
+// Import merge request extended handlers
+import * as mrExtHandlers from "../handlers/merge-request-extended-handlers.js";
+
 /**
  * Registry of all available tools mapped to their handler functions
  */
@@ -133,5 +154,53 @@ export const toolRegistry: ToolRegistry = {
   gitlab_list_group_members: usersGroupsHandlers.listGroupMembers,
   gitlab_add_group_member: usersGroupsHandlers.addGroupMember,
   gitlab_list_project_members: usersGroupsHandlers.listProjectMembers,
-  gitlab_add_project_member: usersGroupsHandlers.addProjectMember
+  gitlab_add_project_member: usersGroupsHandlers.addProjectMember,
+
+  // Branch tools
+  gitlab_create_branch: branchHandlers.createBranch,
+  gitlab_delete_branch: branchHandlers.deleteBranch,
+
+  // Repository file CRUD tools
+  gitlab_create_repository_file: repoFilesHandlers.createRepositoryFile,
+  gitlab_update_repository_file: repoFilesHandlers.updateRepositoryFile,
+  gitlab_delete_repository_file: repoFilesHandlers.deleteRepositoryFile,
+
+  // Release CRUD tools
+  gitlab_create_release: repoExtHandlers.createRelease,
+  gitlab_update_release: repoExtHandlers.updateRelease,
+  gitlab_delete_release: repoExtHandlers.deleteRelease,
+
+  // Merge request extended tools
+  gitlab_approve_merge_request: mrExtHandlers.approveMergeRequest,
+  gitlab_unapprove_merge_request: mrExtHandlers.unapproveMergeRequest,
+  gitlab_rebase_merge_request: mrExtHandlers.rebaseMergeRequest,
+
+  // Wiki tools
+  gitlab_list_wiki_pages: wikiHandlers.listWikiPages,
+  gitlab_get_wiki_page: wikiHandlers.getWikiPage,
+  gitlab_create_wiki_page: wikiHandlers.createWikiPage,
+  gitlab_update_wiki_page: wikiHandlers.updateWikiPage,
+  gitlab_delete_wiki_page: wikiHandlers.deleteWikiPage,
+
+  // Protected branch tools
+  gitlab_list_protected_branches: protectedBranchHandlers.listProtectedBranches,
+  gitlab_get_protected_branch: protectedBranchHandlers.getProtectedBranch,
+  gitlab_protect_branch: protectedBranchHandlers.protectBranch,
+  gitlab_unprotect_branch: protectedBranchHandlers.unprotectBranch,
+
+  // Runner tools
+  gitlab_list_runners: runnerHandlers.listRunners,
+  gitlab_get_runner: runnerHandlers.getRunner,
+  gitlab_list_project_runners: runnerHandlers.listProjectRunners,
+
+  // Pipeline schedule tools
+  gitlab_list_pipeline_schedules: pipelineScheduleHandlers.listPipelineSchedules,
+  gitlab_get_pipeline_schedule: pipelineScheduleHandlers.getPipelineSchedule,
+  gitlab_create_pipeline_schedule: pipelineScheduleHandlers.createPipelineSchedule,
+  gitlab_update_pipeline_schedule: pipelineScheduleHandlers.updatePipelineSchedule,
+  gitlab_delete_pipeline_schedule: pipelineScheduleHandlers.deletePipelineSchedule,
+  gitlab_run_pipeline_schedule: pipelineScheduleHandlers.runPipelineSchedule,
+
+  // Job artifacts tools
+  gitlab_get_job_artifacts: pipelineHandlers.getJobArtifacts
 };

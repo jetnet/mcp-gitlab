@@ -18,18 +18,13 @@ const outputPath = path.resolve(__dirname, '../TOOLS.md');
 
 // Convert heading text to GitHub-compatible anchor
 function generateAnchor(text) {
-  // Hard-coded anchors for specific categories
-  if (text === 'Integrations & Webhooks') {
-    return 'integrations--webhooks';
-  } else if (text === 'User & Group Management') {
-    return 'user--group-management';
-  }
-  
-  // Generic anchor generation for other categories
   return text
     .toLowerCase()
+    .replace(/&/g, '')        // Remove ampersands
     .replace(/[\/]/g, '')     // Remove forward slashes
-    .replace(/\s+/g, '-');    // Replace spaces with hyphens
+    .replace(/\s+/g, '-')     // Replace spaces with hyphens
+    .replace(/--+/g, '-')     // Collapse multiple hyphens
+    .replace(/-$/, '');        // Remove trailing hyphen
 }
 
 try {
@@ -137,26 +132,66 @@ try {
   markdown += 'This document provides details on all available tools in the GitLab MCP server.\n\n';
   markdown += 'Each tool is designed to interact with GitLab APIs, allowing AI assistants to work with repositories, merge requests, issues, CI/CD pipelines, and more.\n\n';
   
-  // Group tools by category based on name prefix
+  // Categorize each tool exactly once, in priority order
+  const categorized = new Set();
+  
+  function categorize(tools, testFn) {
+    return tools.filter(t => {
+      if (!categorized.has(t.name) && testFn(t)) {
+        categorized.add(t.name);
+        return true;
+      }
+      return false;
+    });
+  }
+
   const categories = {
-    'Repository Management': tools.filter(t => 
-      t.name.includes('project') || 
-      t.name.includes('branch') || 
-      t.name.includes('merge_request') || 
-      t.name.includes('issue') || 
-      t.name.includes('repository')),
-    'Integrations & Webhooks': tools.filter(t => 
-      t.name.includes('integration') || 
-      t.name.includes('webhook')),
-    'CI/CD Management': tools.filter(t => 
-      t.name.includes('trigger') || 
-      t.name.includes('pipeline') || 
+    'Repository Management': categorize(tools, t =>
+      t.name.includes('project') ||
+      t.name.includes('merge_request') ||
+      t.name.includes('repository') ||
+      t.name === 'gitlab_search' ||
+      t.name === 'gitlab_compare_branches'),
+    'Branch Management': categorize(tools, t =>
+      t.name.includes('branch') ||
+      t.name.includes('protected_branch')),
+    'Commits, Tags & Releases': categorize(tools, t =>
+      t.name.includes('commit') ||
+      t.name.includes('tag') ||
+      t.name.includes('release')),
+    'Issues & Tracking': categorize(tools, t =>
+      t.name.includes('issue') ||
+      t.name.includes('label') ||
+      t.name.includes('milestone') ||
+      t.name.includes('snippet')),
+    'Wiki': categorize(tools, t =>
+      t.name.includes('wiki')),
+    'Pipelines & Jobs': categorize(tools, t =>
+      t.name.includes('pipeline') ||
+      t.name.includes('job')),
+    'CI/CD Variables & Triggers': categorize(tools, t =>
+      t.name.includes('trigger') ||
       t.name.includes('cicd')),
-    'User & Group Management': tools.filter(t => 
-      t.name.includes('user') || 
-      t.name.includes('group') || 
+    'Runners': categorize(tools, t =>
+      t.name.includes('runner')),
+    'Environments & Deployments': categorize(tools, t =>
+      t.name.includes('environment') ||
+      t.name.includes('deployment')),
+    'Integrations & Webhooks': categorize(tools, t =>
+      t.name.includes('integration') ||
+      t.name.includes('webhook') ||
+      t.name.includes('slack')),
+    'User & Group Management': categorize(tools, t =>
+      t.name.includes('user') ||
+      t.name.includes('group') ||
       t.name.includes('member'))
   };
+
+  // Catch any uncategorized tools
+  const uncategorized = tools.filter(t => !categorized.has(t.name));
+  if (uncategorized.length > 0) {
+    categories['Other'] = uncategorized;
+  }
   
   // Generate table of contents
   markdown += '## Table of Contents\n\n';

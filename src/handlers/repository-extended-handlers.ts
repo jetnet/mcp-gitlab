@@ -160,3 +160,63 @@ export const listMergeRequestCommits: ToolHandler = async (params, context) => {
   );
   return formatResponse(response.data);
 };
+
+/**
+ * Create release handler
+ */
+export const createRelease: ToolHandler = async (params, context) => {
+  const { project_id, tag_name, name, description, ref, milestones, released_at } = params.arguments || {};
+  if (!project_id || !tag_name) {
+    throw new McpError(ErrorCode.InvalidParams, 'project_id and tag_name are required');
+  }
+
+  const body: any = { tag_name };
+  if (name !== undefined) body.name = name;
+  if (description !== undefined) body.description = description;
+  if (ref !== undefined) body.ref = ref;
+  if (milestones !== undefined) body.milestones = milestones;
+  if (released_at !== undefined) body.released_at = released_at;
+
+  const response = await context.axiosInstance.post(
+    `/projects/${encodeURIComponent(String(project_id))}/releases`,
+    body
+  );
+  return formatResponse(response.data);
+};
+
+/**
+ * Update release handler
+ */
+export const updateRelease: ToolHandler = async (params, context) => {
+  const { project_id, tag_name, name, description, milestones, released_at } = params.arguments || {};
+  if (!project_id || !tag_name) {
+    throw new McpError(ErrorCode.InvalidParams, 'project_id and tag_name are required');
+  }
+
+  const body: any = {};
+  if (name !== undefined) body.name = name;
+  if (description !== undefined) body.description = description;
+  if (milestones !== undefined) body.milestones = milestones;
+  if (released_at !== undefined) body.released_at = released_at;
+
+  const response = await context.axiosInstance.put(
+    `/projects/${encodeURIComponent(String(project_id))}/releases/${encodeURIComponent(String(tag_name))}`,
+    body
+  );
+  return formatResponse(response.data);
+};
+
+/**
+ * Delete release handler
+ */
+export const deleteRelease: ToolHandler = async (params, context) => {
+  const { project_id, tag_name } = params.arguments || {};
+  if (!project_id || !tag_name) {
+    throw new McpError(ErrorCode.InvalidParams, 'project_id and tag_name are required');
+  }
+
+  const response = await context.axiosInstance.delete(
+    `/projects/${encodeURIComponent(String(project_id))}/releases/${encodeURIComponent(String(tag_name))}`
+  );
+  return formatResponse(response.data);
+};
