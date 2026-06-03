@@ -132,7 +132,7 @@ Replace `YOUR_GITLAB_API_TOKEN` with your actual GitLab API token. You can gener
 
 For full parameter details, see [TOOLS.md](./TOOLS.md).
 
-### Repository Management (21 tools)
+### Repository Management (30 tools)
 
 | Tool | Description |
 |------|-------------|
@@ -147,6 +147,12 @@ For full parameter details, see [TOOLS.md](./TOOLS.md).
 | `gitlab_update_merge_request` | Update a merge request title and description |
 | `gitlab_get_merge_request_approvals` | Get the approval state of a merge request |
 | `gitlab_list_merge_request_notes` | List all notes/comments on a merge request |
+| `gitlab_list_merge_request_discussions` | List all discussion threads on a merge request |
+| `gitlab_create_merge_request_thread` | Create a new merge request discussion thread |
+| `gitlab_resolve_merge_request_thread` | Resolve or reopen a merge request discussion thread |
+| `gitlab_create_merge_request_discussion_note` | Add a reply note to a merge request discussion thread |
+| `gitlab_update_merge_request_discussion_note` | Update a merge request discussion note |
+| `gitlab_delete_merge_request_discussion_note` | Delete a merge request discussion note |
 | `gitlab_list_merge_request_commits` | List commits in a merge request |
 | `gitlab_merge_merge_request` | Accept and merge a merge request |
 | `gitlab_approve_merge_request` | Approve a merge request |
@@ -161,7 +167,7 @@ For full parameter details, see [TOOLS.md](./TOOLS.md).
 | `gitlab_list_repository_tree` | List files and directories in a repository |
 | `gitlab_search` | Search across GitLab (globally, group, or project scoped) |
 
-### Branch Management (6 tools)
+### Branch Management (7 tools)
 
 | Tool | Description |
 |------|-------------|
