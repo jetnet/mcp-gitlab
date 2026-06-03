@@ -2,7 +2,7 @@
  * Tool registry - maps tool names to handler functions
  */
 
-import { ToolRegistry } from "./handler-types.js";
+import type { ToolRegistry } from "./handler-types.js";
 
 // Import repository handlers
 import * as repoHandlers from "../handlers/repository-handlers.js";
@@ -69,6 +69,12 @@ export const toolRegistry: ToolRegistry = {
   gitlab_compare_branches: repoHandlers.compareBranches,
   gitlab_get_merge_request_approvals: repoHandlers.getMergeRequestApprovals,
   gitlab_list_merge_request_notes: repoHandlers.listMergeRequestNotes,
+  gitlab_list_merge_request_discussions: repoHandlers.listMergeRequestDiscussions,
+  gitlab_create_merge_request_thread: repoHandlers.createMergeRequestThread,
+  gitlab_resolve_merge_request_thread: repoHandlers.resolveMergeRequestThread,
+  gitlab_create_merge_request_discussion_note: repoHandlers.createMergeRequestDiscussionNote,
+  gitlab_update_merge_request_discussion_note: repoHandlers.updateMergeRequestDiscussionNote,
+  gitlab_delete_merge_request_discussion_note: repoHandlers.deleteMergeRequestDiscussionNote,
   gitlab_merge_merge_request: repoHandlers.mergeMergeRequest,
   gitlab_search: repoHandlers.search,
 

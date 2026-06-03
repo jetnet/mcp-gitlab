@@ -1486,6 +1486,105 @@ export const toolDefinitions = [
     }
   },
   {
+    name: 'gitlab_list_merge_request_discussions',
+    description: 'List all discussion threads on a merge request, including inline diff comments and top-level notes',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The project ID or raw namespaced path (for example group/project)' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        per_page: { type: 'number', description: 'Number of results per page (default: 20)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      },
+      required: ['project_id', 'merge_request_iid']
+    }
+  },
+  {
+    name: 'gitlab_create_merge_request_thread',
+    description: 'Create a new discussion thread on a merge request. Supports top-level comments and inline diff threads with position.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The project ID or raw namespaced path (for example group/project)' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        body: { type: 'string', description: 'The content of the thread' },
+        position: {
+          type: 'object',
+          description: 'Position for an inline diff thread. Requires base_sha, head_sha, start_sha, and position_type. Text positions also require new_path, old_path, and at least one of new_line or old_line.',
+          properties: {
+            base_sha: { type: 'string', description: 'SHA referencing the base commit in the diff' },
+            start_sha: { type: 'string', description: 'SHA referencing the commit at the start of the diff' },
+            head_sha: { type: 'string', description: 'SHA referencing the HEAD commit of the source branch' },
+            position_type: { type: 'string', description: 'Type of position', enum: ['text', 'image', 'file'] },
+            new_path: { type: 'string', description: 'File path in the new version; required for text positions' },
+            old_path: { type: 'string', description: 'File path in the old version; required for text positions' },
+            new_line: { type: 'number', description: 'Line number in the new file; text positions require new_line or old_line' },
+            old_line: { type: 'number', description: 'Line number in the old file; text positions require new_line or old_line' }
+          },
+          required: ['base_sha', 'head_sha', 'start_sha', 'position_type']
+        }
+      },
+      required: ['project_id', 'merge_request_iid', 'body']
+    }
+  },
+  {
+    name: 'gitlab_resolve_merge_request_thread',
+    description: 'Resolve or reopen a merge request discussion thread',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The project ID or raw namespaced path (for example group/project)' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        discussion_id: { type: 'string', description: 'The ID of the discussion thread' },
+        resolved: { type: 'boolean', description: 'Resolve (true) or reopen (false) the thread; defaults to true' }
+      },
+      required: ['project_id', 'merge_request_iid', 'discussion_id']
+    }
+  },
+  {
+    name: 'gitlab_create_merge_request_discussion_note',
+    description: 'Add a reply note to an existing merge request discussion thread',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The project ID or raw namespaced path (for example group/project)' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        discussion_id: { type: 'string', description: 'The ID of the discussion thread' },
+        body: { type: 'string', description: 'The content of the reply note' }
+      },
+      required: ['project_id', 'merge_request_iid', 'discussion_id', 'body']
+    }
+  },
+  {
+    name: 'gitlab_update_merge_request_discussion_note',
+    description: 'Update the body of a note in a merge request discussion thread',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The project ID or raw namespaced path (for example group/project)' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        discussion_id: { type: 'string', description: 'The ID of the discussion thread' },
+        note_id: { type: 'number', description: 'The ID of the discussion note' },
+        body: { type: 'string', description: 'The new note body' }
+      },
+      required: ['project_id', 'merge_request_iid', 'discussion_id', 'note_id', 'body']
+    }
+  },
+  {
+    name: 'gitlab_delete_merge_request_discussion_note',
+    description: 'Delete a note from a merge request discussion thread',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The project ID or raw namespaced path (for example group/project)' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        discussion_id: { type: 'string', description: 'The ID of the discussion thread' },
+        note_id: { type: 'number', description: 'The ID of the discussion note' }
+      },
+      required: ['project_id', 'merge_request_iid', 'discussion_id', 'note_id']
+    }
+  },
+  {
     name: 'gitlab_merge_merge_request',
     description: 'Accept and merge a merge request',
     inputSchema: {

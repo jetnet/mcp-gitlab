@@ -24,7 +24,14 @@ Each tool is designed to interact with GitLab APIs, allowing AI assistants to wo
 
 List GitLab projects accessible to the user
 
-This tool does not require any parameters.
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `search` | `string` | No | Search projects by name |
+| `owned` | `boolean` | No | Limit to projects explicitly owned by the current user |
+| `membership` | `boolean` | No | Limit to projects the current user is a member of |
+| `per_page` | `number` | No | Number of projects to return per page (max 100) |
 
 ### gitlab_get_project
 
@@ -222,6 +229,93 @@ List all notes/comments on a merge request
 | `per_page` | `number` | No | Number of results per page (max 100) |
 | `page` | `number` | No | Page number for pagination |
 
+### gitlab_list_merge_request_discussions
+
+List all discussion threads on a merge request, including inline diff comments and top-level notes
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The project ID or raw namespaced path (for example group/project) |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `per_page` | `number` | No | Number of results per page (default: 20) |
+| `page` | `number` | No | Page number for pagination |
+
+### gitlab_create_merge_request_thread
+
+Create a new discussion thread on a merge request. Supports top-level comments and inline diff threads with position.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The project ID or raw namespaced path (for example group/project) |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `body` | `string` | Yes | The content of the thread |
+| `position` | `object` | No | Position for an inline diff thread. Requires base_sha, head_sha, start_sha, and position_type. Text positions also require new_path, old_path, and at least one of new_line or old_line. |
+| `position.base_sha` | `string` | Yes | SHA referencing the base commit in the diff |
+| `position.start_sha` | `string` | Yes | SHA referencing the commit at the start of the diff |
+| `position.head_sha` | `string` | Yes | SHA referencing the HEAD commit of the source branch |
+| `position.position_type` | `string` | Yes | Type of position |
+| `position.new_path` | `string` | No | File path in the new version; required for text positions |
+| `position.old_path` | `string` | No | File path in the old version; required for text positions |
+| `position.new_line` | `number` | No | Line number in the new file; text positions require new_line or old_line |
+| `position.old_line` | `number` | No | Line number in the old file; text positions require new_line or old_line |
+
+### gitlab_resolve_merge_request_thread
+
+Resolve or reopen a merge request discussion thread
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The project ID or raw namespaced path (for example group/project) |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `discussion_id` | `string` | Yes | The ID of the discussion thread |
+| `resolved` | `boolean` | No | Resolve (true) or reopen (false) the thread; defaults to true |
+
+### gitlab_create_merge_request_discussion_note
+
+Add a reply note to an existing merge request discussion thread
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The project ID or raw namespaced path (for example group/project) |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `discussion_id` | `string` | Yes | The ID of the discussion thread |
+| `body` | `string` | Yes | The content of the reply note |
+
+### gitlab_update_merge_request_discussion_note
+
+Update the body of a note in a merge request discussion thread
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The project ID or raw namespaced path (for example group/project) |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `discussion_id` | `string` | Yes | The ID of the discussion thread |
+| `note_id` | `number` | Yes | The ID of the discussion note |
+| `body` | `string` | Yes | The new note body |
+
+### gitlab_delete_merge_request_discussion_note
+
+Delete a note from a merge request discussion thread
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The project ID or raw namespaced path (for example group/project) |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `discussion_id` | `string` | Yes | The ID of the discussion thread |
+| `note_id` | `number` | Yes | The ID of the discussion note |
+
 ### gitlab_merge_merge_request
 
 Accept and merge a merge request
@@ -350,6 +444,12 @@ List all runners available in a project, including from ancestor groups and inst
 | Name | Type | Required | Description |
 | ---- | ---- | -------- | ----------- |
 | `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `type` | `string` | No | Type of runners to return |
+| `status` | `string` | No | Status of runners to return |
+| `paused` | `boolean` | No | Filter by paused state |
+| `tag_list` | `string` | No | Comma-separated list of runner tags to filter by |
+| `per_page` | `number` | No | Number of results per page (max 100) |
+| `page` | `number` | No | Page number for pagination |
 
 ## Branch Management
 
@@ -553,6 +653,7 @@ Create a new release for a project. Requires at least Developer role.
 | `name` | `string` | No | The release name |
 | `description` | `string` | No | The description of the release (supports Markdown) |
 | `ref` | `string` | No | If tag_name does not exist, the release is created from ref (commit SHA, branch name, or another tag) |
+| `milestones` | `array` | No | Titles of milestones to associate with the release |
 | `released_at` | `string` | No | The release date (ISO 8601 format) |
 
 ### gitlab_update_release
@@ -567,6 +668,7 @@ Update an existing release
 | `tag_name` | `string` | Yes | The tag associated with the release |
 | `name` | `string` | No | The new release name |
 | `description` | `string` | No | The new description of the release (supports Markdown) |
+| `milestones` | `array` | No | Titles of milestones to associate with the release |
 | `released_at` | `string` | No | The release date (ISO 8601 format) |
 
 ### gitlab_delete_release
@@ -1114,6 +1216,7 @@ Get a specific CI/CD variable
 | `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
 | `key` | `string` | Yes | The key of the variable |
 | `filter` | `object` | No | Filter by environment_scope when multiple variables share the same key |
+| `filter.environment_scope` | `string` | No | The environment scope to filter by |
 
 ### gitlab_create_cicd_variable
 
@@ -1152,6 +1255,7 @@ Update a CI/CD variable
 | `variable_type` | `string` | No | The type of the variable: env_var (default) or file |
 | `environment_scope` | `string` | No | The environment scope of the variable |
 | `filter` | `object` | No | Filter by environment_scope when multiple variables share the same key |
+| `filter.environment_scope` | `string` | No | The environment scope to filter by |
 
 ### gitlab_delete_cicd_variable
 
@@ -1164,6 +1268,7 @@ Delete a CI/CD variable
 | `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
 | `key` | `string` | Yes | The key of the variable |
 | `filter` | `object` | No | Filter by environment_scope when multiple variables share the same key |
+| `filter.environment_scope` | `string` | No | The environment scope to filter by |
 
 ### gitlab_list_group_cicd_variables
 
@@ -1186,6 +1291,7 @@ Get a specific CI/CD variable for a group
 | `group_id` | `string` | Yes | The ID or URL-encoded path of the group |
 | `key` | `string` | Yes | The key of the variable |
 | `filter` | `object` | No | Filter by environment_scope when multiple variables share the same key |
+| `filter.environment_scope` | `string` | No | The environment scope to filter by |
 
 ### gitlab_create_group_cicd_variable
 
@@ -1224,6 +1330,7 @@ Update a CI/CD variable for a group
 | `variable_type` | `string` | No | The type of the variable: env_var (default) or file |
 | `environment_scope` | `string` | No | The environment scope of the variable. Premium and Ultimate only |
 | `filter` | `object` | No | Filter by environment_scope when multiple variables share the same key |
+| `filter.environment_scope` | `string` | No | The environment scope to filter by |
 
 ### gitlab_delete_group_cicd_variable
 
@@ -1236,6 +1343,7 @@ Delete a CI/CD variable for a group
 | `group_id` | `string` | Yes | The ID or URL-encoded path of the group |
 | `key` | `string` | Yes | The key of the variable |
 | `filter` | `object` | No | Filter by environment_scope when multiple variables share the same key |
+| `filter.environment_scope` | `string` | No | The environment scope to filter by |
 
 ## Runners
 
@@ -1243,7 +1351,16 @@ Delete a CI/CD variable for a group
 
 List all runners available to the authenticated user
 
-This tool does not require any parameters.
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `type` | `string` | No | Type of runners to return |
+| `status` | `string` | No | Status of runners to return |
+| `paused` | `boolean` | No | Filter by paused state |
+| `tag_list` | `string` | No | Comma-separated list of runner tags to filter by |
+| `per_page` | `number` | No | Number of results per page (max 100) |
+| `page` | `number` | No | Page number for pagination |
 
 ### gitlab_get_runner
 
@@ -1438,7 +1555,12 @@ Test a webhook
 
 List GitLab users
 
-This tool does not require any parameters.
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `search` | `string` | No | Search users by username, name or email |
+| `active` | `boolean` | No | Filter users by active status |
 
 ### gitlab_get_user
 
@@ -1454,7 +1576,12 @@ Get details of a specific user
 
 List GitLab groups
 
-This tool does not require any parameters.
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `search` | `string` | No | Search groups by name |
+| `owned` | `boolean` | No | Limit to groups explicitly owned by the current user |
 
 ### gitlab_get_group
 
