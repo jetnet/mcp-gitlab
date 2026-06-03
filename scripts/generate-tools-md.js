@@ -21,10 +21,96 @@ function generateAnchor(text) {
   return text
     .toLowerCase()
     .replace(/&/g, '')        // Remove ampersands
-    .replace(/[\/]/g, '')     // Remove forward slashes
+    .replace(/[/]/g, '')     // Remove forward slashes
     .replace(/\s+/g, '-')     // Replace spaces with hyphens
     .replace(/--+/g, '-')     // Collapse multiple hyphens
     .replace(/-$/, '');        // Remove trailing hyphen
+}
+
+function extractObjectAfterKey(text, key) {
+  const keyMatch = new RegExp(`${key}\\s*:`).exec(text);
+  if (!keyMatch) return null;
+
+  const openIndex = text.indexOf('{', keyMatch.index + keyMatch[0].length);
+  if (openIndex === -1) return null;
+
+  let braceCount = 0;
+  for (let i = openIndex; i < text.length; i++) {
+    if (text[i] === '{') braceCount++;
+    if (text[i] === '}') braceCount--;
+    if (braceCount === 0) {
+      return text.slice(openIndex + 1, i);
+    }
+  }
+
+  return null;
+}
+
+function extractRequired(text, useLastMatch = false) {
+  const matches = [...text.matchAll(/required:\s*\[([\s\S]*?)\]/g)];
+  const requiredMatch = useLastMatch ? matches.at(-1) : matches[0];
+  return requiredMatch
+    ? (requiredMatch[1].match(/['"]([^'"]+)['"]/g) || []).map((r) => r.replace(/['"]/g, ''))
+    : [];
+}
+
+function splitTopLevelProperties(propertiesContent) {
+  const properties = [];
+  let index = 0;
+
+  while (index < propertiesContent.length) {
+    while (index < propertiesContent.length && /[\s,]/.test(propertiesContent[index])) index++;
+
+    const nameMatch = /^[a-zA-Z0-9_]+/.exec(propertiesContent.slice(index));
+    if (!nameMatch) break;
+
+    const name = nameMatch[0];
+    index += name.length;
+    while (index < propertiesContent.length && /\s/.test(propertiesContent[index])) index++;
+    if (propertiesContent[index] !== ':') break;
+    index++;
+    while (index < propertiesContent.length && /\s/.test(propertiesContent[index])) index++;
+    if (propertiesContent[index] !== '{') break;
+
+    const openIndex = index;
+    let braceCount = 0;
+    for (; index < propertiesContent.length; index++) {
+      if (propertiesContent[index] === '{') braceCount++;
+      if (propertiesContent[index] === '}') braceCount--;
+      if (braceCount === 0) {
+        properties.push({ name, content: propertiesContent.slice(openIndex + 1, index) });
+        index++;
+        break;
+      }
+    }
+  }
+
+  return properties;
+}
+
+function parseParameters(propertiesContent, required, prefix = '') {
+  const parameters = [];
+
+  for (const property of splitTopLevelProperties(propertiesContent)) {
+    const typeMatch = property.content.match(/type:\s*['"]([^'"]+)['"]/);
+    const descMatch = property.content.match(/description:\s*['"]([^'"]+)['"]/);
+    if (!typeMatch || !descMatch) continue;
+
+    const parameterName = prefix ? `${prefix}.${property.name}` : property.name;
+    parameters.push({
+      name: parameterName,
+      type: typeMatch[1],
+      description: descMatch[1],
+      required: required.includes(property.name)
+    });
+
+    const nestedProperties = extractObjectAfterKey(property.content, 'properties');
+    if (nestedProperties) {
+      parameters.push(...parseParameters(nestedProperties, extractRequired(property.content), parameterName));
+    }
+  }
+
+  return parameters;
 }
 
 try {
@@ -42,7 +128,7 @@ try {
   
   // Split into individual tool definitions
   const toolDefinitions = [];
-  let toolsContent = match[1];
+  const toolsContent = match[1];
   let braceCount = 0;
   let currentTool = '';
 
@@ -80,45 +166,8 @@ try {
     const name = nameMatch[1];
     const description = descMatch[1];
     
-    // Extract required parameters
-    const requiredMatch = toolDef.match(/required:\s*\[([\s\S]*?)\]/);
-    const required = requiredMatch ? 
-      (requiredMatch[1].match(/['"]([^'"]+)['"]/g) || []).map(r => r.replace(/['"]/g, '')) : 
-      [];
-    
-    // Extract properties
-    const propertiesMatch = toolDef.match(/properties:\s*{([\s\S]*?)}\s*,\s*(?:required:|type:)/);
-    if (!propertiesMatch) {
-      tools.push({
-        name,
-        description,
-        parameters: []
-      });
-      continue;
-    }
-    
-    const propertiesContent = propertiesMatch[1];
-    
-    // Parse individual parameters
-    const parameters = [];
-    const paramMatches = [...propertiesContent.matchAll(/([a-zA-Z0-9_]+):\s*{([\s\S]*?)(?=\s*},\s*[a-zA-Z0-9_]+:|$)/g)];
-    
-    for (const paramMatch of paramMatches) {
-      const paramName = paramMatch[1];
-      const paramContent = paramMatch[2];
-      
-      const typeMatch = paramContent.match(/type:\s*['"]([^'"]+)['"]/);
-      const descMatch = paramContent.match(/description:\s*['"]([^'"]+)['"]/);
-      
-      if (typeMatch && descMatch) {
-        parameters.push({
-          name: paramName,
-          type: typeMatch[1],
-          description: descMatch[1],
-          required: required.includes(paramName)
-        });
-      }
-    }
+    const propertiesContent = extractObjectAfterKey(toolDef, 'properties');
+    const parameters = propertiesContent ? parseParameters(propertiesContent, extractRequired(toolDef, true)) : [];
     
     tools.push({
       name,
