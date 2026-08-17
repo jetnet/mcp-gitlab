@@ -1479,109 +1479,12 @@ export const toolDefinitions = [
       properties: {
         project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
         merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        sort: { type: 'string', description: 'Sort order: asc or desc', enum: ['asc', 'desc'] },
+        order_by: { type: 'string', description: 'Order notes by created_at or updated_at', enum: ['created_at', 'updated_at'] },
         per_page: { type: 'number', description: 'Number of results per page (max 100)' },
         page: { type: 'number', description: 'Page number for pagination' }
       },
       required: ['project_id', 'merge_request_iid']
-    }
-  },
-  {
-    name: 'gitlab_list_merge_request_discussions',
-    description: 'List all discussion threads on a merge request, including inline diff comments and top-level notes',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        project_id: { type: 'string', description: 'The project ID or raw namespaced path (for example group/project)' },
-        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
-        per_page: { type: 'number', description: 'Number of results per page (default: 20)' },
-        page: { type: 'number', description: 'Page number for pagination' }
-      },
-      required: ['project_id', 'merge_request_iid']
-    }
-  },
-  {
-    name: 'gitlab_create_merge_request_thread',
-    description: 'Create a new discussion thread on a merge request. Supports top-level comments and inline diff threads with position.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        project_id: { type: 'string', description: 'The project ID or raw namespaced path (for example group/project)' },
-        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
-        body: { type: 'string', description: 'The content of the thread' },
-        position: {
-          type: 'object',
-          description: 'Position for an inline diff thread. Requires base_sha, head_sha, start_sha, and position_type. Text positions also require new_path, old_path, and at least one of new_line or old_line.',
-          properties: {
-            base_sha: { type: 'string', description: 'SHA referencing the base commit in the diff' },
-            start_sha: { type: 'string', description: 'SHA referencing the commit at the start of the diff' },
-            head_sha: { type: 'string', description: 'SHA referencing the HEAD commit of the source branch' },
-            position_type: { type: 'string', description: 'Type of position', enum: ['text', 'image', 'file'] },
-            new_path: { type: 'string', description: 'File path in the new version; required for text positions' },
-            old_path: { type: 'string', description: 'File path in the old version; required for text positions' },
-            new_line: { type: 'number', description: 'Line number in the new file; text positions require new_line or old_line' },
-            old_line: { type: 'number', description: 'Line number in the old file; text positions require new_line or old_line' }
-          },
-          required: ['base_sha', 'head_sha', 'start_sha', 'position_type']
-        }
-      },
-      required: ['project_id', 'merge_request_iid', 'body']
-    }
-  },
-  {
-    name: 'gitlab_resolve_merge_request_thread',
-    description: 'Resolve or reopen a merge request discussion thread',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        project_id: { type: 'string', description: 'The project ID or raw namespaced path (for example group/project)' },
-        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
-        discussion_id: { type: 'string', description: 'The ID of the discussion thread' },
-        resolved: { type: 'boolean', description: 'Resolve (true) or reopen (false) the thread; defaults to true' }
-      },
-      required: ['project_id', 'merge_request_iid', 'discussion_id']
-    }
-  },
-  {
-    name: 'gitlab_create_merge_request_discussion_note',
-    description: 'Add a reply note to an existing merge request discussion thread',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        project_id: { type: 'string', description: 'The project ID or raw namespaced path (for example group/project)' },
-        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
-        discussion_id: { type: 'string', description: 'The ID of the discussion thread' },
-        body: { type: 'string', description: 'The content of the reply note' }
-      },
-      required: ['project_id', 'merge_request_iid', 'discussion_id', 'body']
-    }
-  },
-  {
-    name: 'gitlab_update_merge_request_discussion_note',
-    description: 'Update the body of a note in a merge request discussion thread',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        project_id: { type: 'string', description: 'The project ID or raw namespaced path (for example group/project)' },
-        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
-        discussion_id: { type: 'string', description: 'The ID of the discussion thread' },
-        note_id: { type: 'number', description: 'The ID of the discussion note' },
-        body: { type: 'string', description: 'The new note body' }
-      },
-      required: ['project_id', 'merge_request_iid', 'discussion_id', 'note_id', 'body']
-    }
-  },
-  {
-    name: 'gitlab_delete_merge_request_discussion_note',
-    description: 'Delete a note from a merge request discussion thread',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        project_id: { type: 'string', description: 'The project ID or raw namespaced path (for example group/project)' },
-        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
-        discussion_id: { type: 'string', description: 'The ID of the discussion thread' },
-        note_id: { type: 'number', description: 'The ID of the discussion note' }
-      },
-      required: ['project_id', 'merge_request_iid', 'discussion_id', 'note_id']
     }
   },
   {
@@ -1690,6 +1593,8 @@ export const toolDefinitions = [
       properties: {
         project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
         issue_iid: { type: 'number', description: 'The internal ID of the issue' },
+        sort: { type: 'string', description: 'Sort order: asc or desc', enum: ['asc', 'desc'] },
+        order_by: { type: 'string', description: 'Order notes by created_at or updated_at', enum: ['created_at', 'updated_at'] },
         per_page: { type: 'number', description: 'Number of results per page (max 100)' },
         page: { type: 'number', description: 'Page number for pagination' }
       },
@@ -2264,6 +2169,714 @@ export const toolDefinitions = [
         job_id: { type: 'number', description: 'The ID of the job' }
       },
       required: ['project_id', 'job_id']
+    }
+  },
+
+  // ---------------------------------------------------------------------
+  // Notes tools - issue notes
+  // ---------------------------------------------------------------------
+  {
+    name: 'gitlab_get_issue_note',
+    description: 'Retrieve a single note (comment) on an issue',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        issue_iid: { type: 'number', description: 'The internal ID of the issue' },
+        note_id: { type: 'number', description: 'The ID of the note' }
+      },
+      required: ['project_id', 'issue_iid', 'note_id']
+    }
+  },
+  {
+    name: 'gitlab_update_issue_note',
+    description: 'Edit the text of an existing note (comment) on an issue',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        issue_iid: { type: 'number', description: 'The internal ID of the issue' },
+        note_id: { type: 'number', description: 'The ID of the note to edit' },
+        body: { type: 'string', description: 'The new content of the note. Limited to 1,000,000 characters' },
+        confidential: { type: 'boolean', description: 'Deprecated. The confidential flag of the note' }
+      },
+      required: ['project_id', 'issue_iid', 'note_id', 'body']
+    }
+  },
+  {
+    name: 'gitlab_delete_issue_note',
+    description: 'Delete an existing note (comment) on an issue',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        issue_iid: { type: 'number', description: 'The internal ID of the issue' },
+        note_id: { type: 'number', description: 'The ID of the note to delete' }
+      },
+      required: ['project_id', 'issue_iid', 'note_id']
+    }
+  },
+
+  // Notes tools - merge request notes
+  {
+    name: 'gitlab_get_merge_request_note',
+    description: 'Retrieve a single note (comment) on a merge request',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        note_id: { type: 'number', description: 'The ID of the note' }
+      },
+      required: ['project_id', 'merge_request_iid', 'note_id']
+    }
+  },
+  {
+    name: 'gitlab_update_merge_request_note',
+    description: 'Edit the text of an existing note (comment) on a merge request',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        note_id: { type: 'number', description: 'The ID of the note to edit' },
+        body: { type: 'string', description: 'The new content of the note. Limited to 1,000,000 characters' },
+        confidential: { type: 'boolean', description: 'Deprecated. The confidential flag of the note' }
+      },
+      required: ['project_id', 'merge_request_iid', 'note_id', 'body']
+    }
+  },
+  {
+    name: 'gitlab_delete_merge_request_note',
+    description: 'Delete an existing note (comment) on a merge request',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        note_id: { type: 'number', description: 'The ID of the note to delete' }
+      },
+      required: ['project_id', 'merge_request_iid', 'note_id']
+    }
+  },
+
+  // Notes tools - epic notes (group level)
+  {
+    name: 'gitlab_list_epic_notes',
+    description: 'List all notes (comments) on a group epic',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        group_id: { type: 'string', description: 'The ID or URL-encoded path of the group' },
+        epic_id: { type: 'number', description: 'The ID of the epic' },
+        sort: { type: 'string', description: 'Sort order: asc or desc', enum: ['asc', 'desc'] },
+        order_by: { type: 'string', description: 'Order notes by created_at or updated_at', enum: ['created_at', 'updated_at'] },
+        per_page: { type: 'number', description: 'Number of results per page (max 100)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      },
+      required: ['group_id', 'epic_id']
+    }
+  },
+  {
+    name: 'gitlab_get_epic_note',
+    description: 'Retrieve a single note (comment) on a group epic',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        group_id: { type: 'string', description: 'The ID or URL-encoded path of the group' },
+        epic_id: { type: 'number', description: 'The ID of the epic' },
+        note_id: { type: 'number', description: 'The ID of the note' }
+      },
+      required: ['group_id', 'epic_id', 'note_id']
+    }
+  },
+  {
+    name: 'gitlab_create_epic_note',
+    description: 'Add a note (comment) to a group epic',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        group_id: { type: 'string', description: 'The ID or URL-encoded path of the group' },
+        epic_id: { type: 'number', description: 'The ID of the epic' },
+        body: { type: 'string', description: 'The content of the note. Limited to 1,000,000 characters' },
+        confidential: { type: 'boolean', description: 'Deprecated. The confidential flag of the note' },
+        created_at: { type: 'string', description: 'ISO 8601 date time string, e.g. 2016-03-11T03:45:40Z (requires admin or owner rights)' }
+      },
+      required: ['group_id', 'epic_id', 'body']
+    }
+  },
+  {
+    name: 'gitlab_update_epic_note',
+    description: 'Edit the text of an existing note (comment) on a group epic',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        group_id: { type: 'string', description: 'The ID or URL-encoded path of the group' },
+        epic_id: { type: 'number', description: 'The ID of the epic' },
+        note_id: { type: 'number', description: 'The ID of the note to edit' },
+        body: { type: 'string', description: 'The new content of the note' }
+      },
+      required: ['group_id', 'epic_id', 'note_id', 'body']
+    }
+  },
+  {
+    name: 'gitlab_delete_epic_note',
+    description: 'Delete an existing note (comment) on a group epic',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        group_id: { type: 'string', description: 'The ID or URL-encoded path of the group' },
+        epic_id: { type: 'number', description: 'The ID of the epic' },
+        note_id: { type: 'number', description: 'The ID of the note to delete' }
+      },
+      required: ['group_id', 'epic_id', 'note_id']
+    }
+  },
+
+  // Notes tools - snippet notes
+  {
+    name: 'gitlab_list_snippet_notes',
+    description: 'List all notes (comments) on a project snippet',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        snippet_id: { type: 'number', description: 'The ID of the snippet' },
+        sort: { type: 'string', description: 'Sort order: asc or desc', enum: ['asc', 'desc'] },
+        order_by: { type: 'string', description: 'Order notes by created_at or updated_at', enum: ['created_at', 'updated_at'] },
+        per_page: { type: 'number', description: 'Number of results per page (max 100)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      },
+      required: ['project_id', 'snippet_id']
+    }
+  },
+  {
+    name: 'gitlab_get_snippet_note',
+    description: 'Retrieve a single note (comment) on a project snippet',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        snippet_id: { type: 'number', description: 'The ID of the snippet' },
+        note_id: { type: 'number', description: 'The ID of the note' }
+      },
+      required: ['project_id', 'snippet_id', 'note_id']
+    }
+  },
+  {
+    name: 'gitlab_create_snippet_note',
+    description: 'Add a note (comment) to a project snippet',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        snippet_id: { type: 'number', description: 'The ID of the snippet' },
+        body: { type: 'string', description: 'The content of the note. Limited to 1,000,000 characters' },
+        created_at: { type: 'string', description: 'ISO 8601 date time string (requires admin or owner rights)' }
+      },
+      required: ['project_id', 'snippet_id', 'body']
+    }
+  },
+  {
+    name: 'gitlab_update_snippet_note',
+    description: 'Edit the text of an existing note (comment) on a project snippet',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        snippet_id: { type: 'number', description: 'The ID of the snippet' },
+        note_id: { type: 'number', description: 'The ID of the note to edit' },
+        body: { type: 'string', description: 'The new content of the note' }
+      },
+      required: ['project_id', 'snippet_id', 'note_id', 'body']
+    }
+  },
+  {
+    name: 'gitlab_delete_snippet_note',
+    description: 'Delete an existing note (comment) on a project snippet',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        snippet_id: { type: 'number', description: 'The ID of the snippet' },
+        note_id: { type: 'number', description: 'The ID of the note to delete' }
+      },
+      required: ['project_id', 'snippet_id', 'note_id']
+    }
+  },
+
+  // Notes tools - wiki page notes (GitLab 17.9+)
+  {
+    name: 'gitlab_list_wiki_page_notes',
+    description: 'List all notes (comments) on a project wiki page. Requires GitLab 17.9 or later',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        wiki_page_meta_id: { type: 'number', description: 'The ID of the wiki page meta record' },
+        sort: { type: 'string', description: 'Sort order: asc or desc', enum: ['asc', 'desc'] },
+        order_by: { type: 'string', description: 'Order notes by created_at or updated_at', enum: ['created_at', 'updated_at'] },
+        per_page: { type: 'number', description: 'Number of results per page (max 100)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      },
+      required: ['project_id', 'wiki_page_meta_id']
+    }
+  },
+  {
+    name: 'gitlab_get_wiki_page_note',
+    description: 'Retrieve a single note (comment) on a project wiki page. Requires GitLab 17.9 or later',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        wiki_page_meta_id: { type: 'number', description: 'The ID of the wiki page meta record' },
+        note_id: { type: 'number', description: 'The ID of the note' }
+      },
+      required: ['project_id', 'wiki_page_meta_id', 'note_id']
+    }
+  },
+  {
+    name: 'gitlab_create_wiki_page_note',
+    description: 'Add a note (comment) to a project wiki page. Requires GitLab 17.9 or later',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        wiki_page_meta_id: { type: 'number', description: 'The ID of the wiki page meta record' },
+        body: { type: 'string', description: 'The content of the note. Limited to 1,000,000 characters' },
+        internal: { type: 'boolean', description: 'If true, the note is internal and visible only to project members' }
+      },
+      required: ['project_id', 'wiki_page_meta_id', 'body']
+    }
+  },
+  {
+    name: 'gitlab_update_wiki_page_note',
+    description: 'Edit the text of an existing note (comment) on a project wiki page. Requires GitLab 17.9 or later',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        wiki_page_meta_id: { type: 'number', description: 'The ID of the wiki page meta record' },
+        note_id: { type: 'number', description: 'The ID of the note to edit' },
+        body: { type: 'string', description: 'The new content of the note' }
+      },
+      required: ['project_id', 'wiki_page_meta_id', 'note_id', 'body']
+    }
+  },
+  {
+    name: 'gitlab_delete_wiki_page_note',
+    description: 'Delete an existing note (comment) on a project wiki page. Requires GitLab 17.9 or later',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        wiki_page_meta_id: { type: 'number', description: 'The ID of the wiki page meta record' },
+        note_id: { type: 'number', description: 'The ID of the note to delete' }
+      },
+      required: ['project_id', 'wiki_page_meta_id', 'note_id']
+    }
+  },
+
+  // ---------------------------------------------------------------------
+  // Discussion (thread) tools - issues
+  // ---------------------------------------------------------------------
+  {
+    name: 'gitlab_list_issue_discussions',
+    description: 'List all discussion threads on an issue, including all notes in each thread',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        issue_iid: { type: 'number', description: 'The internal ID of the issue' },
+        per_page: { type: 'number', description: 'Number of results per page (max 100)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      },
+      required: ['project_id', 'issue_iid']
+    }
+  },
+  {
+    name: 'gitlab_get_issue_discussion',
+    description: 'Retrieve a single discussion thread on an issue',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        issue_iid: { type: 'number', description: 'The internal ID of the issue' },
+        discussion_id: { type: 'string', description: 'The ID of the discussion thread' }
+      },
+      required: ['project_id', 'issue_iid', 'discussion_id']
+    }
+  },
+  {
+    name: 'gitlab_create_issue_discussion',
+    description: 'Create a new discussion thread on an issue. Unlike a plain note, replies can be added to it later',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        issue_iid: { type: 'number', description: 'The internal ID of the issue' },
+        body: { type: 'string', description: 'The content of the thread' },
+        created_at: { type: 'string', description: 'ISO 8601 date time string (requires admin or owner rights)' }
+      },
+      required: ['project_id', 'issue_iid', 'body']
+    }
+  },
+  {
+    name: 'gitlab_add_issue_discussion_note',
+    description: 'Add a reply note to an existing issue discussion thread',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        issue_iid: { type: 'number', description: 'The internal ID of the issue' },
+        discussion_id: { type: 'string', description: 'The ID of the discussion thread' },
+        body: { type: 'string', description: 'The content of the reply' },
+        created_at: { type: 'string', description: 'ISO 8601 date time string (requires admin or owner rights)' }
+      },
+      required: ['project_id', 'issue_iid', 'discussion_id', 'body']
+    }
+  },
+  {
+    name: 'gitlab_update_issue_discussion_note',
+    description: 'Edit the text of an existing note inside an issue discussion thread',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        issue_iid: { type: 'number', description: 'The internal ID of the issue' },
+        discussion_id: { type: 'string', description: 'The ID of the discussion thread' },
+        note_id: { type: 'number', description: 'The ID of the thread note to edit' },
+        body: { type: 'string', description: 'The new content of the note' }
+      },
+      required: ['project_id', 'issue_iid', 'discussion_id', 'note_id', 'body']
+    }
+  },
+  {
+    name: 'gitlab_delete_issue_discussion_note',
+    description: 'Delete a note from an issue discussion thread',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        issue_iid: { type: 'number', description: 'The internal ID of the issue' },
+        discussion_id: { type: 'string', description: 'The ID of the discussion thread' },
+        note_id: { type: 'number', description: 'The ID of the thread note to delete' }
+      },
+      required: ['project_id', 'issue_iid', 'discussion_id', 'note_id']
+    }
+  },
+
+  // Discussion (thread) tools - merge requests
+  {
+    name: 'gitlab_list_merge_request_discussions',
+    description: 'List all discussion threads on a merge request, including diff threads and their resolved state',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        per_page: { type: 'number', description: 'Number of results per page (max 100)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      },
+      required: ['project_id', 'merge_request_iid']
+    }
+  },
+  {
+    name: 'gitlab_get_merge_request_discussion',
+    description: 'Retrieve a single discussion thread on a merge request',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        discussion_id: { type: 'string', description: 'The ID of the discussion thread' }
+      },
+      required: ['project_id', 'merge_request_iid', 'discussion_id']
+    }
+  },
+  {
+    name: 'gitlab_create_merge_request_discussion',
+    description: 'Create a new discussion thread on a merge request, optionally anchored to a specific line in the diff via the position object',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        body: { type: 'string', description: 'The content of the thread' },
+        commit_id: { type: 'string', description: 'SHA referencing the commit to start the thread on' },
+        created_at: { type: 'string', description: 'ISO 8601 date time string (requires admin or owner rights)' },
+        position: {
+          type: 'object',
+          description: 'Diff position for a code comment. Requires base_sha, head_sha, start_sha and position_type',
+          properties: {
+            base_sha: { type: 'string', description: 'Base commit SHA in the source branch' },
+            head_sha: { type: 'string', description: 'SHA referencing the HEAD of this merge request' },
+            start_sha: { type: 'string', description: 'SHA referencing the commit in the target branch' },
+            position_type: { type: 'string', description: 'Type of the position reference', enum: ['text', 'image', 'file'] },
+            new_path: { type: 'string', description: 'File path after the change' },
+            old_path: { type: 'string', description: 'File path before the change' },
+            new_line: { type: 'number', description: 'Line number after the change (for added or unchanged lines)' },
+            old_line: { type: 'number', description: 'Line number before the change (for removed or unchanged lines)' },
+            line_range: { type: 'object', description: 'Line range for multiline comments, with start and end objects' },
+            width: { type: 'number', description: 'For image diff notes, image width' },
+            height: { type: 'number', description: 'For image diff notes, image height' },
+            x: { type: 'number', description: 'For image diff notes, X coordinate' },
+            y: { type: 'number', description: 'For image diff notes, Y coordinate' }
+          }
+        }
+      },
+      required: ['project_id', 'merge_request_iid', 'body']
+    }
+  },
+  {
+    name: 'gitlab_resolve_merge_request_discussion',
+    description: 'Resolve or reopen an entire discussion thread on a merge request',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        discussion_id: { type: 'string', description: 'The ID of the discussion thread' },
+        resolved: { type: 'boolean', description: 'True to resolve the thread, false to reopen it' }
+      },
+      required: ['project_id', 'merge_request_iid', 'discussion_id', 'resolved']
+    }
+  },
+  {
+    name: 'gitlab_add_merge_request_discussion_note',
+    description: 'Add a reply note to an existing merge request discussion thread',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        discussion_id: { type: 'string', description: 'The ID of the discussion thread' },
+        body: { type: 'string', description: 'The content of the reply' },
+        created_at: { type: 'string', description: 'ISO 8601 date time string (requires admin or owner rights)' }
+      },
+      required: ['project_id', 'merge_request_iid', 'discussion_id', 'body']
+    }
+  },
+  {
+    name: 'gitlab_update_merge_request_discussion_note',
+    description: 'Edit the text of a note inside a merge request discussion thread, or resolve/unresolve that single note. Exactly one of body or resolved must be supplied',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        discussion_id: { type: 'string', description: 'The ID of the discussion thread' },
+        note_id: { type: 'number', description: 'The ID of the thread note' },
+        body: { type: 'string', description: 'The new content of the note. Mutually exclusive with resolved' },
+        resolved: { type: 'boolean', description: 'Resolve or reopen the note. Mutually exclusive with body' }
+      },
+      required: ['project_id', 'merge_request_iid', 'discussion_id', 'note_id']
+    }
+  },
+  {
+    name: 'gitlab_delete_merge_request_discussion_note',
+    description: 'Delete a note from a merge request discussion thread',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        discussion_id: { type: 'string', description: 'The ID of the discussion thread' },
+        note_id: { type: 'number', description: 'The ID of the thread note to delete' }
+      },
+      required: ['project_id', 'merge_request_iid', 'discussion_id', 'note_id']
+    }
+  },
+
+  // Discussion (thread) tools - commits
+  {
+    name: 'gitlab_list_commit_discussions',
+    description: 'List all discussion threads on a commit',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        commit_id: { type: 'string', description: 'The SHA of the commit' },
+        per_page: { type: 'number', description: 'Number of results per page (max 100)' },
+        page: { type: 'number', description: 'Page number for pagination' }
+      },
+      required: ['project_id', 'commit_id']
+    }
+  },
+  {
+    name: 'gitlab_get_commit_discussion',
+    description: 'Retrieve a single discussion thread on a commit',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        commit_id: { type: 'string', description: 'The SHA of the commit' },
+        discussion_id: { type: 'string', description: 'The ID of the discussion thread' }
+      },
+      required: ['project_id', 'commit_id', 'discussion_id']
+    }
+  },
+  {
+    name: 'gitlab_create_commit_discussion',
+    description: 'Create a new discussion thread on a commit, optionally anchored to a diff position',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        commit_id: { type: 'string', description: 'The SHA of the commit' },
+        body: { type: 'string', description: 'The content of the thread' },
+        created_at: { type: 'string', description: 'ISO 8601 date time string (requires admin or owner rights)' },
+        position: {
+          type: 'object',
+          description: 'Diff position for a code comment on the commit',
+          properties: {
+            base_sha: { type: 'string', description: 'SHA of the parent commit' },
+            head_sha: { type: 'string', description: 'SHA of this commit, same as commit_id' },
+            start_sha: { type: 'string', description: 'SHA of the parent commit' },
+            position_type: { type: 'string', description: 'Type of the position reference', enum: ['text', 'image', 'file'] },
+            new_path: { type: 'string', description: 'File path after the change' },
+            old_path: { type: 'string', description: 'File path before the change' },
+            new_line: { type: 'number', description: 'Line number after the change' },
+            old_line: { type: 'number', description: 'Line number before the change' },
+            width: { type: 'number', description: 'For image diff notes, image width' },
+            height: { type: 'number', description: 'For image diff notes, image height' },
+            x: { type: 'number', description: 'For image diff notes, X coordinate' },
+            y: { type: 'number', description: 'For image diff notes, Y coordinate' }
+          }
+        }
+      },
+      required: ['project_id', 'commit_id', 'body']
+    }
+  },
+  {
+    name: 'gitlab_add_commit_discussion_note',
+    description: 'Add a reply note to an existing commit discussion thread',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        commit_id: { type: 'string', description: 'The SHA of the commit' },
+        discussion_id: { type: 'string', description: 'The ID of the discussion thread' },
+        body: { type: 'string', description: 'The content of the reply' },
+        created_at: { type: 'string', description: 'ISO 8601 date time string (requires admin or owner rights)' }
+      },
+      required: ['project_id', 'commit_id', 'discussion_id', 'body']
+    }
+  },
+
+  // ---------------------------------------------------------------------
+  // Draft note tools (pending merge request review comments)
+  // ---------------------------------------------------------------------
+  {
+    name: 'gitlab_list_draft_notes',
+    description: 'List all unpublished draft notes on a merge request',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' }
+      },
+      required: ['project_id', 'merge_request_iid']
+    }
+  },
+  {
+    name: 'gitlab_get_draft_note',
+    description: 'Retrieve a single unpublished draft note on a merge request',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        draft_note_id: { type: 'number', description: 'The ID of the draft note' }
+      },
+      required: ['project_id', 'merge_request_iid', 'draft_note_id']
+    }
+  },
+  {
+    name: 'gitlab_create_draft_note',
+    description: 'Create an unpublished draft note on a merge request, for batching review comments before publishing',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        note: { type: 'string', description: 'The content of the draft note' },
+        in_reply_to_discussion_id: { type: 'string', description: 'The ID of a thread this draft note replies to' },
+        resolve_discussion: { type: 'boolean', description: 'If true, resolve the thread referenced by in_reply_to_discussion_id when published' },
+        commit_id: { type: 'string', description: 'SHA referencing the commit to start the thread on' },
+        position: {
+          type: 'object',
+          description: 'Diff position for a code comment',
+          properties: {
+            base_sha: { type: 'string', description: 'Base commit SHA in the source branch' },
+            head_sha: { type: 'string', description: 'SHA referencing the HEAD of this merge request' },
+            start_sha: { type: 'string', description: 'SHA referencing the commit in the target branch' },
+            position_type: { type: 'string', description: 'Type of the position reference', enum: ['text', 'image', 'file'] },
+            new_path: { type: 'string', description: 'File path after the change' },
+            old_path: { type: 'string', description: 'File path before the change' },
+            new_line: { type: 'number', description: 'Line number after the change' },
+            old_line: { type: 'number', description: 'Line number before the change' },
+            line_range: { type: 'object', description: 'Line range for multiline comments' }
+          }
+        }
+      },
+      required: ['project_id', 'merge_request_iid', 'note']
+    }
+  },
+  {
+    name: 'gitlab_update_draft_note',
+    description: 'Edit an existing unpublished draft note on a merge request',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        draft_note_id: { type: 'number', description: 'The ID of the draft note to edit' },
+        note: { type: 'string', description: 'The new content of the draft note' },
+        position: { type: 'object', description: 'Updated diff position for the draft note' }
+      },
+      required: ['project_id', 'merge_request_iid', 'draft_note_id']
+    }
+  },
+  {
+    name: 'gitlab_delete_draft_note',
+    description: 'Delete an unpublished draft note on a merge request',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        draft_note_id: { type: 'number', description: 'The ID of the draft note to delete' }
+      },
+      required: ['project_id', 'merge_request_iid', 'draft_note_id']
+    }
+  },
+  {
+    name: 'gitlab_publish_draft_note',
+    description: 'Publish a single draft note on a merge request, turning it into a visible comment',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        draft_note_id: { type: 'number', description: 'The ID of the draft note to publish' }
+      },
+      required: ['project_id', 'merge_request_iid', 'draft_note_id']
+    }
+  },
+  {
+    name: 'gitlab_bulk_publish_draft_notes',
+    description: 'Publish all pending draft notes on a merge request that belong to the current user, optionally with a summary note and review state',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_id: { type: 'string', description: 'The ID or URL-encoded path of the project' },
+        merge_request_iid: { type: 'number', description: 'The internal ID of the merge request' },
+        note: { type: 'string', description: 'Text of a summary note to add to the merge request' },
+        internal: { type: 'boolean', description: 'If true, the summary note is internal' },
+        reviewer_state: { type: 'string', description: 'Sets the review state after publishing. Does not record a formal approval', enum: ['requested_changes', 'reviewed'] }
+      },
+      required: ['project_id', 'merge_request_iid']
     }
   }
 ];

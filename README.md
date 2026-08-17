@@ -15,6 +15,9 @@ This MCP server provides comprehensive tools for interacting with GitLab reposit
 - Managing branches (create, delete, protect, unprotect)
 - Working with merge requests (create, update, merge, approve, unapprove, rebase, review notes)
 - Adding comments and internal notes to merge requests
+- Full note (comment) CRUD — create, read, **edit**, and delete notes on issues, merge requests, epics, snippets, and wiki pages
+- Discussion threads on issues, merge requests, and commits, including diff-anchored code comments and resolve/reopen
+- Draft notes for batched merge request reviews (create, edit, publish individually or in bulk)
 - Listing and working with issues (full CRUD, notes, labels, milestones)
 - Repository file CRUD (get, create, update, delete with commits)
 - Getting and comparing repository file contents
@@ -132,7 +135,7 @@ Replace `YOUR_GITLAB_API_TOKEN` with your actual GitLab API token. You can gener
 
 For full parameter details, see [TOOLS.md](./TOOLS.md).
 
-### Repository Management (30 tools)
+### Repository Management (24 tools)
 
 | Tool | Description |
 |------|-------------|
@@ -147,12 +150,6 @@ For full parameter details, see [TOOLS.md](./TOOLS.md).
 | `gitlab_update_merge_request` | Update a merge request title and description |
 | `gitlab_get_merge_request_approvals` | Get the approval state of a merge request |
 | `gitlab_list_merge_request_notes` | List all notes/comments on a merge request |
-| `gitlab_list_merge_request_discussions` | List all discussion threads on a merge request |
-| `gitlab_create_merge_request_thread` | Create a new merge request discussion thread |
-| `gitlab_resolve_merge_request_thread` | Resolve or reopen a merge request discussion thread |
-| `gitlab_create_merge_request_discussion_note` | Add a reply note to a merge request discussion thread |
-| `gitlab_update_merge_request_discussion_note` | Update a merge request discussion note |
-| `gitlab_delete_merge_request_discussion_note` | Delete a merge request discussion note |
 | `gitlab_list_merge_request_commits` | List commits in a merge request |
 | `gitlab_merge_merge_request` | Accept and merge a merge request |
 | `gitlab_approve_merge_request` | Approve a merge request |
@@ -219,6 +216,68 @@ For full parameter details, see [TOOLS.md](./TOOLS.md).
 | `gitlab_create_wiki_page` | Create a new wiki page |
 | `gitlab_update_wiki_page` | Update an existing wiki page |
 | `gitlab_delete_wiki_page` | Delete a wiki page |
+
+### Notes & Comments (21 tools)
+
+Full CRUD over notes. Use these to **edit or delete an existing comment** on an issue, merge request, epic, snippet, or wiki page.
+
+| Tool | Description |
+|------|-------------|
+| `gitlab_get_issue_note` | Retrieve a single note on an issue |
+| `gitlab_update_issue_note` | Edit the text of an existing issue note |
+| `gitlab_delete_issue_note` | Delete an issue note |
+| `gitlab_get_merge_request_note` | Retrieve a single note on a merge request |
+| `gitlab_update_merge_request_note` | Edit the text of an existing merge request note |
+| `gitlab_delete_merge_request_note` | Delete a merge request note |
+| `gitlab_list_epic_notes` | List all notes on a group epic |
+| `gitlab_get_epic_note` | Retrieve a single epic note |
+| `gitlab_create_epic_note` | Add a note to a group epic |
+| `gitlab_update_epic_note` | Edit an existing epic note |
+| `gitlab_delete_epic_note` | Delete an epic note |
+| `gitlab_list_snippet_notes` | List all notes on a project snippet |
+| `gitlab_get_snippet_note` | Retrieve a single snippet note |
+| `gitlab_create_snippet_note` | Add a note to a project snippet |
+| `gitlab_update_snippet_note` | Edit an existing snippet note |
+| `gitlab_delete_snippet_note` | Delete a snippet note |
+| `gitlab_list_wiki_page_notes` | List all notes on a wiki page (GitLab 17.9+) |
+| `gitlab_get_wiki_page_note` | Retrieve a single wiki page note (GitLab 17.9+) |
+| `gitlab_create_wiki_page_note` | Add a note to a wiki page (GitLab 17.9+) |
+| `gitlab_update_wiki_page_note` | Edit an existing wiki page note (GitLab 17.9+) |
+| `gitlab_delete_wiki_page_note` | Delete a wiki page note (GitLab 17.9+) |
+
+### Discussions & Threads (17 tools)
+
+| Tool | Description |
+|------|-------------|
+| `gitlab_list_issue_discussions` | List all discussion threads on an issue |
+| `gitlab_get_issue_discussion` | Retrieve a single issue discussion thread |
+| `gitlab_create_issue_discussion` | Start a new discussion thread on an issue |
+| `gitlab_add_issue_discussion_note` | Reply to an issue discussion thread |
+| `gitlab_update_issue_discussion_note` | Edit a note inside an issue thread |
+| `gitlab_delete_issue_discussion_note` | Delete a note from an issue thread |
+| `gitlab_list_merge_request_discussions` | List all discussion threads on a merge request |
+| `gitlab_get_merge_request_discussion` | Retrieve a single merge request thread |
+| `gitlab_create_merge_request_discussion` | Start a thread, optionally anchored to a diff line |
+| `gitlab_resolve_merge_request_discussion` | Resolve or reopen a merge request thread |
+| `gitlab_add_merge_request_discussion_note` | Reply to a merge request thread |
+| `gitlab_update_merge_request_discussion_note` | Edit a thread note, or resolve/unresolve it |
+| `gitlab_delete_merge_request_discussion_note` | Delete a note from a merge request thread |
+| `gitlab_list_commit_discussions` | List all discussion threads on a commit |
+| `gitlab_get_commit_discussion` | Retrieve a single commit thread |
+| `gitlab_create_commit_discussion` | Start a thread on a commit |
+| `gitlab_add_commit_discussion_note` | Reply to a commit thread |
+
+### Draft Notes / Batched Review (7 tools)
+
+| Tool | Description |
+|------|-------------|
+| `gitlab_list_draft_notes` | List unpublished draft notes on a merge request |
+| `gitlab_get_draft_note` | Retrieve a single draft note |
+| `gitlab_create_draft_note` | Create an unpublished draft review comment |
+| `gitlab_update_draft_note` | Edit an existing draft note |
+| `gitlab_delete_draft_note` | Delete a draft note |
+| `gitlab_publish_draft_note` | Publish a single draft note |
+| `gitlab_bulk_publish_draft_notes` | Publish all pending draft notes, with optional summary and review state |
 
 ### Pipelines & Jobs (19 tools)
 
@@ -336,6 +395,30 @@ Please add a comment to merge request 123 in project 'mygroup/myproject' saying 
 
 ```
 Add an internal note to merge request 123 in project 'mygroup/myproject' that says "Needs security review before merging." Make sure it's only visible to team members.
+```
+
+### Edit an existing comment on an issue
+
+```
+In project 'mygroup/myproject', find my comment on issue 42 that mentions the old deadline and edit it to say "Deadline moved to next sprint."
+```
+
+### Edit an existing comment on a merge request
+
+```
+Edit note 636 on merge request 123 in project 'mygroup/myproject' to say "Resolved in the latest commit."
+```
+
+### Resolve a review thread
+
+```
+List the discussion threads on merge request 123 in project 'mygroup/myproject', then resolve the one about error handling.
+```
+
+### Batch a review with draft notes
+
+```
+Add three draft review comments to merge request 123 in project 'mygroup/myproject', then publish them all at once with the summary "Overall looks good, minor nits inline."
 ```
 
 ### Update a merge request title and description

@@ -261,137 +261,20 @@ export const getMergeRequestApprovals: ToolHandler = async (params, context) => 
  * List merge request notes handler
  */
 export const listMergeRequestNotes: ToolHandler = async (params, context) => {
-  const { project_id, merge_request_iid, per_page, page } = params.arguments || {};
+  const { project_id, merge_request_iid, sort, order_by, per_page, page } = params.arguments || {};
   if (!project_id || !merge_request_iid) {
     throw new McpError(ErrorCode.InvalidParams, 'project_id and merge_request_iid are required');
   }
+
+  const query: Record<string, any> = { per_page: per_page || 20, page };
+  if (sort !== undefined) query.sort = sort;
+  if (order_by !== undefined) query.order_by = order_by;
 
   const response = await context.axiosInstance.get(
     `/projects/${encodeURIComponent(String(project_id))}/merge_requests/${merge_request_iid}/notes`,
-    { params: { per_page: per_page || 20, page } }
+    { params: query }
   );
   return formatResponse(response.data);
-};
-
-/**
- * List merge request discussions handler
- */
-export const listMergeRequestDiscussions: ToolHandler = async (params, context) => {
-  const { project_id, merge_request_iid, per_page, page } = params.arguments || {};
-  if (!project_id || !merge_request_iid) {
-    throw new McpError(ErrorCode.InvalidParams, 'project_id and merge_request_iid are required');
-  }
-
-  const response = await context.axiosInstance.get(
-    `/projects/${encodeURIComponent(String(project_id))}/merge_requests/${merge_request_iid}/discussions`,
-    { params: { per_page: per_page || 20, page } }
-  );
-  return formatResponse(response.data);
-};
-
-/**
- * Create merge request discussion thread handler
- */
-export const createMergeRequestThread: ToolHandler = async (params, context) => {
-  const { project_id, merge_request_iid, body, position } = params.arguments || {};
-  if (!project_id || !merge_request_iid || !body) {
-    throw new McpError(ErrorCode.InvalidParams, 'project_id, merge_request_iid, and body are required');
-  }
-
-  const requestBody: any = { body };
-  if (position !== undefined) {
-    if (typeof position !== 'object' || position === null || Array.isArray(position)) {
-      throw new McpError(ErrorCode.InvalidParams, 'position must be an object when provided');
-    }
-
-    const diffPosition = position as Record<string, unknown>;
-    const requiredPositionFields = ['base_sha', 'head_sha', 'start_sha', 'position_type'];
-    const missingPositionFields = requiredPositionFields.filter((field) => !diffPosition[field]);
-    if (missingPositionFields.length > 0) {
-      throw new McpError(ErrorCode.InvalidParams, `position is missing required fields: ${missingPositionFields.join(', ')}`);
-    }
-
-    if (diffPosition.position_type === 'text') {
-      const missingTextFields = ['new_path', 'old_path'].filter((field) => !diffPosition[field]);
-      if (missingTextFields.length > 0) {
-        throw new McpError(ErrorCode.InvalidParams, `text position is missing required fields: ${missingTextFields.join(', ')}`);
-      }
-      if (diffPosition.new_line === undefined && diffPosition.old_line === undefined) {
-        throw new McpError(ErrorCode.InvalidParams, 'text position requires at least one of new_line or old_line');
-      }
-    }
-
-    requestBody.position = position;
-  }
-
-  const response = await context.axiosInstance.post(
-    `/projects/${encodeURIComponent(String(project_id))}/merge_requests/${merge_request_iid}/discussions`,
-    requestBody
-  );
-  return formatResponse(response.data);
-};
-
-/**
- * Resolve or reopen a merge request discussion thread handler
- */
-export const resolveMergeRequestThread: ToolHandler = async (params, context) => {
-  const { project_id, merge_request_iid, discussion_id, resolved } = params.arguments || {};
-  if (!project_id || !merge_request_iid || !discussion_id) {
-    throw new McpError(ErrorCode.InvalidParams, 'project_id, merge_request_iid, and discussion_id are required');
-  }
-
-  const response = await context.axiosInstance.put(
-    `/projects/${encodeURIComponent(String(project_id))}/merge_requests/${merge_request_iid}/discussions/${encodeURIComponent(String(discussion_id))}`,
-    { resolved: resolved !== false }
-  );
-  return formatResponse(response.data);
-};
-
-/**
- * Create a note in an existing merge request discussion handler
- */
-export const createMergeRequestDiscussionNote: ToolHandler = async (params, context) => {
-  const { project_id, merge_request_iid, discussion_id, body } = params.arguments || {};
-  if (!project_id || !merge_request_iid || !discussion_id || !body) {
-    throw new McpError(ErrorCode.InvalidParams, 'project_id, merge_request_iid, discussion_id, and body are required');
-  }
-
-  const response = await context.axiosInstance.post(
-    `/projects/${encodeURIComponent(String(project_id))}/merge_requests/${merge_request_iid}/discussions/${encodeURIComponent(String(discussion_id))}/notes`,
-    { body }
-  );
-  return formatResponse(response.data);
-};
-
-/**
- * Update a merge request discussion note handler
- */
-export const updateMergeRequestDiscussionNote: ToolHandler = async (params, context) => {
-  const { project_id, merge_request_iid, discussion_id, note_id, body } = params.arguments || {};
-  if (!project_id || !merge_request_iid || !discussion_id || !note_id || !body) {
-    throw new McpError(ErrorCode.InvalidParams, 'project_id, merge_request_iid, discussion_id, note_id, and body are required');
-  }
-
-  const response = await context.axiosInstance.put(
-    `/projects/${encodeURIComponent(String(project_id))}/merge_requests/${merge_request_iid}/discussions/${encodeURIComponent(String(discussion_id))}/notes/${note_id}`,
-    { body }
-  );
-  return formatResponse(response.data);
-};
-
-/**
- * Delete a merge request discussion note handler
- */
-export const deleteMergeRequestDiscussionNote: ToolHandler = async (params, context) => {
-  const { project_id, merge_request_iid, discussion_id, note_id } = params.arguments || {};
-  if (!project_id || !merge_request_iid || !discussion_id || !note_id) {
-    throw new McpError(ErrorCode.InvalidParams, 'project_id, merge_request_iid, discussion_id, and note_id are required');
-  }
-
-  await context.axiosInstance.delete(
-    `/projects/${encodeURIComponent(String(project_id))}/merge_requests/${merge_request_iid}/discussions/${encodeURIComponent(String(discussion_id))}/notes/${note_id}`
-  );
-  return formatResponse({ message: 'Discussion note deleted successfully' });
 };
 
 /**

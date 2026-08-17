@@ -17,6 +17,7 @@ Each tool is designed to interact with GitLab APIs, allowing AI assistants to wo
 - [Environments & Deployments](#environments-deployments)
 - [Integrations & Webhooks](#integrations-webhooks)
 - [User & Group Management](#user-group-management)
+- [Other](#other)
 
 ## Repository Management
 
@@ -226,95 +227,10 @@ List all notes/comments on a merge request
 | ---- | ---- | -------- | ----------- |
 | `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
 | `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `sort` | `string` | No | Sort order: asc or desc |
+| `order_by` | `string` | No | Order notes by created_at or updated_at |
 | `per_page` | `number` | No | Number of results per page (max 100) |
 | `page` | `number` | No | Page number for pagination |
-
-### gitlab_list_merge_request_discussions
-
-List all discussion threads on a merge request, including inline diff comments and top-level notes
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-| ---- | ---- | -------- | ----------- |
-| `project_id` | `string` | Yes | The project ID or raw namespaced path (for example group/project) |
-| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
-| `per_page` | `number` | No | Number of results per page (default: 20) |
-| `page` | `number` | No | Page number for pagination |
-
-### gitlab_create_merge_request_thread
-
-Create a new discussion thread on a merge request. Supports top-level comments and inline diff threads with position.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-| ---- | ---- | -------- | ----------- |
-| `project_id` | `string` | Yes | The project ID or raw namespaced path (for example group/project) |
-| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
-| `body` | `string` | Yes | The content of the thread |
-| `position` | `object` | No | Position for an inline diff thread. Requires base_sha, head_sha, start_sha, and position_type. Text positions also require new_path, old_path, and at least one of new_line or old_line. |
-| `position.base_sha` | `string` | Yes | SHA referencing the base commit in the diff |
-| `position.start_sha` | `string` | Yes | SHA referencing the commit at the start of the diff |
-| `position.head_sha` | `string` | Yes | SHA referencing the HEAD commit of the source branch |
-| `position.position_type` | `string` | Yes | Type of position |
-| `position.new_path` | `string` | No | File path in the new version; required for text positions |
-| `position.old_path` | `string` | No | File path in the old version; required for text positions |
-| `position.new_line` | `number` | No | Line number in the new file; text positions require new_line or old_line |
-| `position.old_line` | `number` | No | Line number in the old file; text positions require new_line or old_line |
-
-### gitlab_resolve_merge_request_thread
-
-Resolve or reopen a merge request discussion thread
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-| ---- | ---- | -------- | ----------- |
-| `project_id` | `string` | Yes | The project ID or raw namespaced path (for example group/project) |
-| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
-| `discussion_id` | `string` | Yes | The ID of the discussion thread |
-| `resolved` | `boolean` | No | Resolve (true) or reopen (false) the thread; defaults to true |
-
-### gitlab_create_merge_request_discussion_note
-
-Add a reply note to an existing merge request discussion thread
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-| ---- | ---- | -------- | ----------- |
-| `project_id` | `string` | Yes | The project ID or raw namespaced path (for example group/project) |
-| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
-| `discussion_id` | `string` | Yes | The ID of the discussion thread |
-| `body` | `string` | Yes | The content of the reply note |
-
-### gitlab_update_merge_request_discussion_note
-
-Update the body of a note in a merge request discussion thread
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-| ---- | ---- | -------- | ----------- |
-| `project_id` | `string` | Yes | The project ID or raw namespaced path (for example group/project) |
-| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
-| `discussion_id` | `string` | Yes | The ID of the discussion thread |
-| `note_id` | `number` | Yes | The ID of the discussion note |
-| `body` | `string` | Yes | The new note body |
-
-### gitlab_delete_merge_request_discussion_note
-
-Delete a note from a merge request discussion thread
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-| ---- | ---- | -------- | ----------- |
-| `project_id` | `string` | Yes | The project ID or raw namespaced path (for example group/project) |
-| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
-| `discussion_id` | `string` | Yes | The ID of the discussion thread |
-| `note_id` | `number` | Yes | The ID of the discussion note |
 
 ### gitlab_merge_merge_request
 
@@ -450,6 +366,152 @@ List all runners available in a project, including from ancestor groups and inst
 | `tag_list` | `string` | No | Comma-separated list of runner tags to filter by |
 | `per_page` | `number` | No | Number of results per page (max 100) |
 | `page` | `number` | No | Page number for pagination |
+
+### gitlab_get_merge_request_note
+
+Retrieve a single note (comment) on a merge request
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `note_id` | `number` | Yes | The ID of the note |
+
+### gitlab_update_merge_request_note
+
+Edit the text of an existing note (comment) on a merge request
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `note_id` | `number` | Yes | The ID of the note to edit |
+| `body` | `string` | Yes | The new content of the note. Limited to 1,000,000 characters |
+| `confidential` | `boolean` | No | Deprecated. The confidential flag of the note |
+
+### gitlab_delete_merge_request_note
+
+Delete an existing note (comment) on a merge request
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `note_id` | `number` | Yes | The ID of the note to delete |
+
+### gitlab_list_merge_request_discussions
+
+List all discussion threads on a merge request, including diff threads and their resolved state
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `per_page` | `number` | No | Number of results per page (max 100) |
+| `page` | `number` | No | Page number for pagination |
+
+### gitlab_get_merge_request_discussion
+
+Retrieve a single discussion thread on a merge request
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `discussion_id` | `string` | Yes | The ID of the discussion thread |
+
+### gitlab_create_merge_request_discussion
+
+Create a new discussion thread on a merge request, optionally anchored to a specific line in the diff via the position object
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `body` | `string` | Yes | The content of the thread |
+| `commit_id` | `string` | No | SHA referencing the commit to start the thread on |
+| `created_at` | `string` | No | ISO 8601 date time string (requires admin or owner rights) |
+| `position` | `object` | No | Diff position for a code comment. Requires base_sha, head_sha, start_sha and position_type |
+| `position.base_sha` | `string` | No | Base commit SHA in the source branch |
+| `position.head_sha` | `string` | No | SHA referencing the HEAD of this merge request |
+| `position.start_sha` | `string` | No | SHA referencing the commit in the target branch |
+| `position.position_type` | `string` | No | Type of the position reference |
+| `position.new_path` | `string` | No | File path after the change |
+| `position.old_path` | `string` | No | File path before the change |
+| `position.new_line` | `number` | No | Line number after the change (for added or unchanged lines) |
+| `position.old_line` | `number` | No | Line number before the change (for removed or unchanged lines) |
+| `position.line_range` | `object` | No | Line range for multiline comments, with start and end objects |
+| `position.width` | `number` | No | For image diff notes, image width |
+| `position.height` | `number` | No | For image diff notes, image height |
+| `position.x` | `number` | No | For image diff notes, X coordinate |
+| `position.y` | `number` | No | For image diff notes, Y coordinate |
+
+### gitlab_resolve_merge_request_discussion
+
+Resolve or reopen an entire discussion thread on a merge request
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `discussion_id` | `string` | Yes | The ID of the discussion thread |
+| `resolved` | `boolean` | Yes | True to resolve the thread, false to reopen it |
+
+### gitlab_add_merge_request_discussion_note
+
+Add a reply note to an existing merge request discussion thread
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `discussion_id` | `string` | Yes | The ID of the discussion thread |
+| `body` | `string` | Yes | The content of the reply |
+| `created_at` | `string` | No | ISO 8601 date time string (requires admin or owner rights) |
+
+### gitlab_update_merge_request_discussion_note
+
+Edit the text of a note inside a merge request discussion thread, or resolve/unresolve that single note. Exactly one of body or resolved must be supplied
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `discussion_id` | `string` | Yes | The ID of the discussion thread |
+| `note_id` | `number` | Yes | The ID of the thread note |
+| `body` | `string` | No | The new content of the note. Mutually exclusive with resolved |
+| `resolved` | `boolean` | No | Resolve or reopen the note. Mutually exclusive with body |
+
+### gitlab_delete_merge_request_discussion_note
+
+Delete a note from a merge request discussion thread
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `discussion_id` | `string` | Yes | The ID of the discussion thread |
+| `note_id` | `number` | Yes | The ID of the thread note to delete |
 
 ## Branch Management
 
@@ -682,6 +744,71 @@ Delete a release. Does not delete the associated tag. Requires at least Develope
 | `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
 | `tag_name` | `string` | Yes | The tag associated with the release to delete |
 
+### gitlab_list_commit_discussions
+
+List all discussion threads on a commit
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `commit_id` | `string` | Yes | The SHA of the commit |
+| `per_page` | `number` | No | Number of results per page (max 100) |
+| `page` | `number` | No | Page number for pagination |
+
+### gitlab_get_commit_discussion
+
+Retrieve a single discussion thread on a commit
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `commit_id` | `string` | Yes | The SHA of the commit |
+| `discussion_id` | `string` | Yes | The ID of the discussion thread |
+
+### gitlab_create_commit_discussion
+
+Create a new discussion thread on a commit, optionally anchored to a diff position
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `commit_id` | `string` | Yes | The SHA of the commit |
+| `body` | `string` | Yes | The content of the thread |
+| `created_at` | `string` | No | ISO 8601 date time string (requires admin or owner rights) |
+| `position` | `object` | No | Diff position for a code comment on the commit |
+| `position.base_sha` | `string` | No | SHA of the parent commit |
+| `position.head_sha` | `string` | No | SHA of this commit, same as commit_id |
+| `position.start_sha` | `string` | No | SHA of the parent commit |
+| `position.position_type` | `string` | No | Type of the position reference |
+| `position.new_path` | `string` | No | File path after the change |
+| `position.old_path` | `string` | No | File path before the change |
+| `position.new_line` | `number` | No | Line number after the change |
+| `position.old_line` | `number` | No | Line number before the change |
+| `position.width` | `number` | No | For image diff notes, image width |
+| `position.height` | `number` | No | For image diff notes, image height |
+| `position.x` | `number` | No | For image diff notes, X coordinate |
+| `position.y` | `number` | No | For image diff notes, Y coordinate |
+
+### gitlab_add_commit_discussion_note
+
+Add a reply note to an existing commit discussion thread
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `commit_id` | `string` | Yes | The SHA of the commit |
+| `discussion_id` | `string` | Yes | The ID of the discussion thread |
+| `body` | `string` | Yes | The content of the reply |
+| `created_at` | `string` | No | ISO 8601 date time string (requires admin or owner rights) |
+
 ## Issues & Tracking
 
 ### gitlab_list_issues
@@ -762,6 +889,8 @@ List notes/comments on an issue
 | ---- | ---- | -------- | ----------- |
 | `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
 | `issue_iid` | `number` | Yes | The internal ID of the issue |
+| `sort` | `string` | No | Sort order: asc or desc |
+| `order_by` | `string` | No | Order notes by created_at or updated_at |
 | `per_page` | `number` | No | Number of results per page (max 100) |
 | `page` | `number` | No | Page number for pagination |
 
@@ -828,6 +957,188 @@ Get details of a specific project snippet
 | `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
 | `snippet_id` | `number` | Yes | The ID of the snippet |
 
+### gitlab_get_issue_note
+
+Retrieve a single note (comment) on an issue
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `issue_iid` | `number` | Yes | The internal ID of the issue |
+| `note_id` | `number` | Yes | The ID of the note |
+
+### gitlab_update_issue_note
+
+Edit the text of an existing note (comment) on an issue
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `issue_iid` | `number` | Yes | The internal ID of the issue |
+| `note_id` | `number` | Yes | The ID of the note to edit |
+| `body` | `string` | Yes | The new content of the note. Limited to 1,000,000 characters |
+| `confidential` | `boolean` | No | Deprecated. The confidential flag of the note |
+
+### gitlab_delete_issue_note
+
+Delete an existing note (comment) on an issue
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `issue_iid` | `number` | Yes | The internal ID of the issue |
+| `note_id` | `number` | Yes | The ID of the note to delete |
+
+### gitlab_list_snippet_notes
+
+List all notes (comments) on a project snippet
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `snippet_id` | `number` | Yes | The ID of the snippet |
+| `sort` | `string` | No | Sort order: asc or desc |
+| `order_by` | `string` | No | Order notes by created_at or updated_at |
+| `per_page` | `number` | No | Number of results per page (max 100) |
+| `page` | `number` | No | Page number for pagination |
+
+### gitlab_get_snippet_note
+
+Retrieve a single note (comment) on a project snippet
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `snippet_id` | `number` | Yes | The ID of the snippet |
+| `note_id` | `number` | Yes | The ID of the note |
+
+### gitlab_create_snippet_note
+
+Add a note (comment) to a project snippet
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `snippet_id` | `number` | Yes | The ID of the snippet |
+| `body` | `string` | Yes | The content of the note. Limited to 1,000,000 characters |
+| `created_at` | `string` | No | ISO 8601 date time string (requires admin or owner rights) |
+
+### gitlab_update_snippet_note
+
+Edit the text of an existing note (comment) on a project snippet
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `snippet_id` | `number` | Yes | The ID of the snippet |
+| `note_id` | `number` | Yes | The ID of the note to edit |
+| `body` | `string` | Yes | The new content of the note |
+
+### gitlab_delete_snippet_note
+
+Delete an existing note (comment) on a project snippet
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `snippet_id` | `number` | Yes | The ID of the snippet |
+| `note_id` | `number` | Yes | The ID of the note to delete |
+
+### gitlab_list_issue_discussions
+
+List all discussion threads on an issue, including all notes in each thread
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `issue_iid` | `number` | Yes | The internal ID of the issue |
+| `per_page` | `number` | No | Number of results per page (max 100) |
+| `page` | `number` | No | Page number for pagination |
+
+### gitlab_get_issue_discussion
+
+Retrieve a single discussion thread on an issue
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `issue_iid` | `number` | Yes | The internal ID of the issue |
+| `discussion_id` | `string` | Yes | The ID of the discussion thread |
+
+### gitlab_create_issue_discussion
+
+Create a new discussion thread on an issue. Unlike a plain note, replies can be added to it later
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `issue_iid` | `number` | Yes | The internal ID of the issue |
+| `body` | `string` | Yes | The content of the thread |
+| `created_at` | `string` | No | ISO 8601 date time string (requires admin or owner rights) |
+
+### gitlab_add_issue_discussion_note
+
+Add a reply note to an existing issue discussion thread
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `issue_iid` | `number` | Yes | The internal ID of the issue |
+| `discussion_id` | `string` | Yes | The ID of the discussion thread |
+| `body` | `string` | Yes | The content of the reply |
+| `created_at` | `string` | No | ISO 8601 date time string (requires admin or owner rights) |
+
+### gitlab_update_issue_discussion_note
+
+Edit the text of an existing note inside an issue discussion thread
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `issue_iid` | `number` | Yes | The internal ID of the issue |
+| `discussion_id` | `string` | Yes | The ID of the discussion thread |
+| `note_id` | `number` | Yes | The ID of the thread note to edit |
+| `body` | `string` | Yes | The new content of the note |
+
+### gitlab_delete_issue_discussion_note
+
+Delete a note from an issue discussion thread
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `issue_iid` | `number` | Yes | The internal ID of the issue |
+| `discussion_id` | `string` | Yes | The ID of the discussion thread |
+| `note_id` | `number` | Yes | The ID of the thread note to delete |
+
 ## Wiki
 
 ### gitlab_list_wiki_pages
@@ -891,6 +1202,71 @@ Delete a wiki page
 | ---- | ---- | -------- | ----------- |
 | `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
 | `slug` | `string` | Yes | URL-encoded slug of the wiki page to delete |
+
+### gitlab_list_wiki_page_notes
+
+List all notes (comments) on a project wiki page. Requires GitLab 17.9 or later
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `wiki_page_meta_id` | `number` | Yes | The ID of the wiki page meta record |
+| `sort` | `string` | No | Sort order: asc or desc |
+| `order_by` | `string` | No | Order notes by created_at or updated_at |
+| `per_page` | `number` | No | Number of results per page (max 100) |
+| `page` | `number` | No | Page number for pagination |
+
+### gitlab_get_wiki_page_note
+
+Retrieve a single note (comment) on a project wiki page. Requires GitLab 17.9 or later
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `wiki_page_meta_id` | `number` | Yes | The ID of the wiki page meta record |
+| `note_id` | `number` | Yes | The ID of the note |
+
+### gitlab_create_wiki_page_note
+
+Add a note (comment) to a project wiki page. Requires GitLab 17.9 or later
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `wiki_page_meta_id` | `number` | Yes | The ID of the wiki page meta record |
+| `body` | `string` | Yes | The content of the note. Limited to 1,000,000 characters |
+| `internal` | `boolean` | No | If true, the note is internal and visible only to project members |
+
+### gitlab_update_wiki_page_note
+
+Edit the text of an existing note (comment) on a project wiki page. Requires GitLab 17.9 or later
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `wiki_page_meta_id` | `number` | Yes | The ID of the wiki page meta record |
+| `note_id` | `number` | Yes | The ID of the note to edit |
+| `body` | `string` | Yes | The new content of the note |
+
+### gitlab_delete_wiki_page_note
+
+Delete an existing note (comment) on a project wiki page. Requires GitLab 17.9 or later
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `wiki_page_meta_id` | `number` | Yes | The ID of the wiki page meta record |
+| `note_id` | `number` | Yes | The ID of the note to delete |
 
 ## Pipelines & Jobs
 
@@ -1614,6 +1990,174 @@ Add a user to a group
 | `group_id` | `string` | Yes | The ID or URL-encoded path of the group |
 | `user_id` | `number` | Yes | The ID of the user |
 | `access_level` | `number` | Yes | Access level (10=Guest, 20=Reporter, 30=Developer, 40=Maintainer, 50=Owner) |
+
+## Other
+
+### gitlab_list_epic_notes
+
+List all notes (comments) on a group epic
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `group_id` | `string` | Yes | The ID or URL-encoded path of the group |
+| `epic_id` | `number` | Yes | The ID of the epic |
+| `sort` | `string` | No | Sort order: asc or desc |
+| `order_by` | `string` | No | Order notes by created_at or updated_at |
+| `per_page` | `number` | No | Number of results per page (max 100) |
+| `page` | `number` | No | Page number for pagination |
+
+### gitlab_get_epic_note
+
+Retrieve a single note (comment) on a group epic
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `group_id` | `string` | Yes | The ID or URL-encoded path of the group |
+| `epic_id` | `number` | Yes | The ID of the epic |
+| `note_id` | `number` | Yes | The ID of the note |
+
+### gitlab_create_epic_note
+
+Add a note (comment) to a group epic
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `group_id` | `string` | Yes | The ID or URL-encoded path of the group |
+| `epic_id` | `number` | Yes | The ID of the epic |
+| `body` | `string` | Yes | The content of the note. Limited to 1,000,000 characters |
+| `confidential` | `boolean` | No | Deprecated. The confidential flag of the note |
+| `created_at` | `string` | No | ISO 8601 date time string, e.g. 2016-03-11T03:45:40Z (requires admin or owner rights) |
+
+### gitlab_update_epic_note
+
+Edit the text of an existing note (comment) on a group epic
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `group_id` | `string` | Yes | The ID or URL-encoded path of the group |
+| `epic_id` | `number` | Yes | The ID of the epic |
+| `note_id` | `number` | Yes | The ID of the note to edit |
+| `body` | `string` | Yes | The new content of the note |
+
+### gitlab_delete_epic_note
+
+Delete an existing note (comment) on a group epic
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `group_id` | `string` | Yes | The ID or URL-encoded path of the group |
+| `epic_id` | `number` | Yes | The ID of the epic |
+| `note_id` | `number` | Yes | The ID of the note to delete |
+
+### gitlab_list_draft_notes
+
+List all unpublished draft notes on a merge request
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+
+### gitlab_get_draft_note
+
+Retrieve a single unpublished draft note on a merge request
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `draft_note_id` | `number` | Yes | The ID of the draft note |
+
+### gitlab_create_draft_note
+
+Create an unpublished draft note on a merge request, for batching review comments before publishing
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `note` | `string` | Yes | The content of the draft note |
+| `in_reply_to_discussion_id` | `string` | No | The ID of a thread this draft note replies to |
+| `resolve_discussion` | `boolean` | No | If true, resolve the thread referenced by in_reply_to_discussion_id when published |
+| `commit_id` | `string` | No | SHA referencing the commit to start the thread on |
+| `position` | `object` | No | Diff position for a code comment |
+| `position.base_sha` | `string` | No | Base commit SHA in the source branch |
+| `position.head_sha` | `string` | No | SHA referencing the HEAD of this merge request |
+| `position.start_sha` | `string` | No | SHA referencing the commit in the target branch |
+| `position.position_type` | `string` | No | Type of the position reference |
+| `position.new_path` | `string` | No | File path after the change |
+| `position.old_path` | `string` | No | File path before the change |
+| `position.new_line` | `number` | No | Line number after the change |
+| `position.old_line` | `number` | No | Line number before the change |
+| `position.line_range` | `object` | No | Line range for multiline comments |
+
+### gitlab_update_draft_note
+
+Edit an existing unpublished draft note on a merge request
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `draft_note_id` | `number` | Yes | The ID of the draft note to edit |
+| `note` | `string` | No | The new content of the draft note |
+| `position` | `object` | No | Updated diff position for the draft note |
+
+### gitlab_delete_draft_note
+
+Delete an unpublished draft note on a merge request
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `draft_note_id` | `number` | Yes | The ID of the draft note to delete |
+
+### gitlab_publish_draft_note
+
+Publish a single draft note on a merge request, turning it into a visible comment
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `draft_note_id` | `number` | Yes | The ID of the draft note to publish |
+
+### gitlab_bulk_publish_draft_notes
+
+Publish all pending draft notes on a merge request that belong to the current user, optionally with a summary note and review state
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| `project_id` | `string` | Yes | The ID or URL-encoded path of the project |
+| `merge_request_iid` | `number` | Yes | The internal ID of the merge request |
+| `note` | `string` | No | Text of a summary note to add to the merge request |
+| `internal` | `boolean` | No | If true, the summary note is internal |
+| `reviewer_state` | `string` | No | Sets the review state after publishing. Does not record a formal approval |
 
 ---
 

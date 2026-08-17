@@ -49,6 +49,12 @@ import * as pipelineScheduleHandlers from "../handlers/pipeline-schedule-handler
 // Import merge request extended handlers
 import * as mrExtHandlers from "../handlers/merge-request-extended-handlers.js";
 
+// Import notes handlers
+import * as notesHandlers from "../handlers/notes-handlers.js";
+
+// Import discussions and draft notes handlers
+import * as discussionsHandlers from "../handlers/discussions-handlers.js";
+
 /**
  * Registry of all available tools mapped to their handler functions
  */
@@ -69,12 +75,6 @@ export const toolRegistry: ToolRegistry = {
   gitlab_compare_branches: repoHandlers.compareBranches,
   gitlab_get_merge_request_approvals: repoHandlers.getMergeRequestApprovals,
   gitlab_list_merge_request_notes: repoHandlers.listMergeRequestNotes,
-  gitlab_list_merge_request_discussions: repoHandlers.listMergeRequestDiscussions,
-  gitlab_create_merge_request_thread: repoHandlers.createMergeRequestThread,
-  gitlab_resolve_merge_request_thread: repoHandlers.resolveMergeRequestThread,
-  gitlab_create_merge_request_discussion_note: repoHandlers.createMergeRequestDiscussionNote,
-  gitlab_update_merge_request_discussion_note: repoHandlers.updateMergeRequestDiscussionNote,
-  gitlab_delete_merge_request_discussion_note: repoHandlers.deleteMergeRequestDiscussionNote,
   gitlab_merge_merge_request: repoHandlers.mergeMergeRequest,
   gitlab_search: repoHandlers.search,
 
@@ -208,5 +208,68 @@ export const toolRegistry: ToolRegistry = {
   gitlab_run_pipeline_schedule: pipelineScheduleHandlers.runPipelineSchedule,
 
   // Job artifacts tools
-  gitlab_get_job_artifacts: pipelineHandlers.getJobArtifacts
+  gitlab_get_job_artifacts: pipelineHandlers.getJobArtifacts,
+
+  // Notes tools - issue notes
+  gitlab_get_issue_note: notesHandlers.getIssueNote,
+  gitlab_update_issue_note: notesHandlers.updateIssueNote,
+  gitlab_delete_issue_note: notesHandlers.deleteIssueNote,
+
+  // Notes tools - merge request notes
+  gitlab_get_merge_request_note: notesHandlers.getMergeRequestNote,
+  gitlab_update_merge_request_note: notesHandlers.updateMergeRequestNote,
+  gitlab_delete_merge_request_note: notesHandlers.deleteMergeRequestNote,
+
+  // Notes tools - epic notes
+  gitlab_list_epic_notes: notesHandlers.listEpicNotes,
+  gitlab_get_epic_note: notesHandlers.getEpicNote,
+  gitlab_create_epic_note: notesHandlers.createEpicNote,
+  gitlab_update_epic_note: notesHandlers.updateEpicNote,
+  gitlab_delete_epic_note: notesHandlers.deleteEpicNote,
+
+  // Notes tools - snippet notes
+  gitlab_list_snippet_notes: notesHandlers.listSnippetNotes,
+  gitlab_get_snippet_note: notesHandlers.getSnippetNote,
+  gitlab_create_snippet_note: notesHandlers.createSnippetNote,
+  gitlab_update_snippet_note: notesHandlers.updateSnippetNote,
+  gitlab_delete_snippet_note: notesHandlers.deleteSnippetNote,
+
+  // Notes tools - wiki page notes
+  gitlab_list_wiki_page_notes: notesHandlers.listWikiPageNotes,
+  gitlab_get_wiki_page_note: notesHandlers.getWikiPageNote,
+  gitlab_create_wiki_page_note: notesHandlers.createWikiPageNote,
+  gitlab_update_wiki_page_note: notesHandlers.updateWikiPageNote,
+  gitlab_delete_wiki_page_note: notesHandlers.deleteWikiPageNote,
+
+  // Discussion tools - issues
+  gitlab_list_issue_discussions: discussionsHandlers.listIssueDiscussions,
+  gitlab_get_issue_discussion: discussionsHandlers.getIssueDiscussion,
+  gitlab_create_issue_discussion: discussionsHandlers.createIssueDiscussion,
+  gitlab_add_issue_discussion_note: discussionsHandlers.addIssueDiscussionNote,
+  gitlab_update_issue_discussion_note: discussionsHandlers.updateIssueDiscussionNote,
+  gitlab_delete_issue_discussion_note: discussionsHandlers.deleteIssueDiscussionNote,
+
+  // Discussion tools - merge requests
+  gitlab_list_merge_request_discussions: discussionsHandlers.listMergeRequestDiscussions,
+  gitlab_get_merge_request_discussion: discussionsHandlers.getMergeRequestDiscussion,
+  gitlab_create_merge_request_discussion: discussionsHandlers.createMergeRequestDiscussion,
+  gitlab_resolve_merge_request_discussion: discussionsHandlers.resolveMergeRequestDiscussion,
+  gitlab_add_merge_request_discussion_note: discussionsHandlers.addMergeRequestDiscussionNote,
+  gitlab_update_merge_request_discussion_note: discussionsHandlers.updateMergeRequestDiscussionNote,
+  gitlab_delete_merge_request_discussion_note: discussionsHandlers.deleteMergeRequestDiscussionNote,
+
+  // Discussion tools - commits
+  gitlab_list_commit_discussions: discussionsHandlers.listCommitDiscussions,
+  gitlab_get_commit_discussion: discussionsHandlers.getCommitDiscussion,
+  gitlab_create_commit_discussion: discussionsHandlers.createCommitDiscussion,
+  gitlab_add_commit_discussion_note: discussionsHandlers.addCommitDiscussionNote,
+
+  // Draft note tools
+  gitlab_list_draft_notes: discussionsHandlers.listDraftNotes,
+  gitlab_get_draft_note: discussionsHandlers.getDraftNote,
+  gitlab_create_draft_note: discussionsHandlers.createDraftNote,
+  gitlab_update_draft_note: discussionsHandlers.updateDraftNote,
+  gitlab_delete_draft_note: discussionsHandlers.deleteDraftNote,
+  gitlab_publish_draft_note: discussionsHandlers.publishDraftNote,
+  gitlab_bulk_publish_draft_notes: discussionsHandlers.bulkPublishDraftNotes
 };

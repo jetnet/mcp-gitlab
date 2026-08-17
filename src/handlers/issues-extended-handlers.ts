@@ -88,14 +88,18 @@ export const deleteIssue: ToolHandler = async (params, context) => {
  * List issue notes handler
  */
 export const listIssueNotes: ToolHandler = async (params, context) => {
-  const { project_id, issue_iid, per_page, page } = params.arguments || {};
+  const { project_id, issue_iid, sort, order_by, per_page, page } = params.arguments || {};
   if (!project_id || !issue_iid) {
     throw new McpError(ErrorCode.InvalidParams, 'project_id and issue_iid are required');
   }
 
+  const query: Record<string, any> = { per_page: per_page || 20, page };
+  if (sort !== undefined) query.sort = sort;
+  if (order_by !== undefined) query.order_by = order_by;
+
   const response = await context.axiosInstance.get(
     `/projects/${encodeURIComponent(String(project_id))}/issues/${issue_iid}/notes`,
-    { params: { per_page: per_page || 20, page } }
+    { params: query }
   );
   return formatResponse(response.data);
 };

@@ -4,15 +4,16 @@
 
 | Metric | Count |
 |--------|-------|
-| This repo (before this change) | 117 tools |
-| This repo (after this change) | 123 tools (+6 MR discussion/thread tools) |
+| This repo (before the MR discussion change) | 117 tools |
+| This repo (after the MR discussion change) | 123 tools (+6 MR discussion/thread tools) |
+| This repo (after the notes/discussions change) | 162 tools (+39 net) |
 | Upstream (zereight-gitlab-mcp tools/registry.ts) | 196 tools |
-| Raw tool-count delta after this change | 73 tools |
+| Raw tool-count delta | 34 tools |
 
-The upstream repo covers a broader surface area of the GitLab API (draft notes, work items,
-GraphQL endpoints, merge request versions, etc.). This repo does not claim to port all
-remaining upstream API capabilities; the normalized comparison found about 130 missing
-upstream capabilities before this scoped change and about 124 after adding these six tools.
+The upstream repo covers a broader surface area of the GitLab API (work items, GraphQL
+endpoints, merge request versions, etc.). This repo does not claim to port all remaining
+upstream API capabilities. Draft notes are no longer a gap — they were added in the
+notes/discussions change described below.
 
 ## AI Workflow Support Comparison
 
@@ -30,17 +31,46 @@ this change because they are broad assistant-orchestration infrastructure rather
 GitLab MCP API implementation, and the executable hooks introduce repository-local side
 effects. Porting them should be a separate product decision.
 
-## Scoped Changes in This Update
+## Scoped Changes: MR Discussion/Thread Workflow Tools
 
-This change adds **MR Discussion/Thread Workflow Tools** — six new tools enabling AI review
-loops over merge request discussions:
+An earlier change added six tools enabling AI review loops over merge request discussions.
+Those tools were subsequently renamed for consistency with the wider notes/discussions work
+described below; see the naming note at the end of this document.
 
-- `gitlab_list_merge_request_discussions` — list all threads on an MR
-- `gitlab_create_merge_request_thread` — start a new thread (supports diff position)
-- `gitlab_resolve_merge_request_thread` — resolve/unresolve a thread
-- `gitlab_create_merge_request_discussion_note` — reply to an existing thread
-- `gitlab_update_merge_request_discussion_note` — edit a thread reply
-- `gitlab_delete_merge_request_discussion_note` — delete a thread reply
+## Scoped Changes: Notes, Discussions and Draft Notes
+
+This change adds 45 tools covering the GitLab Notes, Discussions and Draft Notes APIs, of
+which 39 are net new after reconciling with the six MR discussion tools above.
+
+**Note CRUD** — previously the server could only create and list comments. It can now
+retrieve, **edit** and delete them:
+
+- Issues and merge requests: `gitlab_get_*_note`, `gitlab_update_*_note`, `gitlab_delete_*_note`
+- Epics, snippets and wiki pages: full list/get/create/update/delete
+  (wiki page notes require GitLab 17.9 or later)
+
+**Discussion threads** — issues, merge requests and commits, including diff-anchored code
+comments through the `position` object (multiline via `position.line_range`) and thread
+resolve/reopen.
+
+**Draft notes** — batched merge request review comments with individual and bulk publish,
+including `reviewer_state` on bulk publish.
 
 This change does **not** attempt to port all remaining API coverage differences between
 the two repositories.
+
+## Naming Convention
+
+Merge request discussion tools use `_discussion` rather than `_thread`, so that issue,
+merge request and commit discussions share one consistent naming scheme. Three tools added
+by the earlier MR discussion change were renamed accordingly:
+
+| Previous name | Current name |
+|---------------|--------------|
+| `gitlab_create_merge_request_thread` | `gitlab_create_merge_request_discussion` |
+| `gitlab_resolve_merge_request_thread` | `gitlab_resolve_merge_request_discussion` |
+| `gitlab_create_merge_request_discussion_note` | `gitlab_add_merge_request_discussion_note` |
+
+`gitlab_list_merge_request_discussions`, `gitlab_update_merge_request_discussion_note` and
+`gitlab_delete_merge_request_discussion_note` kept their names. The renamed tools also gained
+a sibling, `gitlab_get_merge_request_discussion`, for retrieving a single thread.
