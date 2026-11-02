@@ -6,6 +6,7 @@
  */
 
 import axios, { AxiosInstance } from "axios";
+import { redactMaskedVariableValues } from "./utils/secret-redaction.js";
 
 /**
  * Class to manage GitLab CI/CD features
@@ -164,7 +165,7 @@ export class CiCdManager {
         }
       }
 
-      return allVariables;
+      return redactMaskedVariableValues(allVariables);
     } catch (error) {
       throw this.handleError(error, 'Failed to list CI/CD variables');
     }
@@ -189,7 +190,7 @@ export class CiCdManager {
         `/projects/${encodeURIComponent(String(projectId))}/variables/${encodeURIComponent(key)}`,
         { params }
       );
-      return response.data;
+      return redactMaskedVariableValues(response.data);
     } catch (error) {
       throw this.handleError(error, `Failed to get CI/CD variable: ${key}`);
     }
@@ -218,7 +219,7 @@ export class CiCdManager {
         `/projects/${encodeURIComponent(String(projectId))}/variables`,
         options
       );
-      return response.data;
+      return redactMaskedVariableValues(response.data);
     } catch (error) {
       throw this.handleError(error, `Failed to create CI/CD variable: ${options.key}`);
     }
@@ -253,7 +254,7 @@ export class CiCdManager {
         body,
         { params }
       );
-      return response.data;
+      return redactMaskedVariableValues(response.data);
     } catch (error) {
       throw this.handleError(error, `Failed to update CI/CD variable: ${key}`);
     }
@@ -313,7 +314,7 @@ export class CiCdManager {
         }
       }
 
-      return allVariables;
+      return redactMaskedVariableValues(allVariables);
     } catch (error) {
       throw this.handleError(error, 'Failed to list group CI/CD variables');
     }
@@ -338,7 +339,7 @@ export class CiCdManager {
         `/groups/${encodeURIComponent(String(groupId))}/variables/${encodeURIComponent(key)}`,
         { params }
       );
-      return response.data;
+      return redactMaskedVariableValues(response.data);
     } catch (error) {
       throw this.handleError(error, `Failed to get group CI/CD variable: ${key}`);
     }
@@ -367,7 +368,7 @@ export class CiCdManager {
         `/groups/${encodeURIComponent(String(groupId))}/variables`,
         options
       );
-      return response.data;
+      return redactMaskedVariableValues(response.data);
     } catch (error) {
       throw this.handleError(error, `Failed to create group CI/CD variable: ${options.key}`);
     }
@@ -402,7 +403,7 @@ export class CiCdManager {
         body,
         { params }
       );
-      return response.data;
+      return redactMaskedVariableValues(response.data);
     } catch (error) {
       throw this.handleError(error, `Failed to update group CI/CD variable: ${key}`);
     }

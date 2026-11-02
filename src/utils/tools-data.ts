@@ -2076,7 +2076,7 @@ export const toolDefinitions = [
   // Pipeline schedule tools
   {
     name: 'gitlab_list_pipeline_schedules',
-    description: 'List all pipeline schedules for a project',
+    description: 'List all pipeline schedules for a project. Warning: schedule variables values are returned as-is; schedule variables carry no masked flag, so masked-variable redaction does not apply to them',
     inputSchema: {
       type: 'object',
       properties: {
@@ -2090,7 +2090,7 @@ export const toolDefinitions = [
   },
   {
     name: 'gitlab_get_pipeline_schedule',
-    description: 'Get details of a single pipeline schedule',
+    description: 'Get details of a single pipeline schedule. Warning: schedule variables values are returned as-is; schedule variables carry no masked flag, so masked-variable redaction does not apply to them',
     inputSchema: {
       type: 'object',
       properties: {
@@ -2102,7 +2102,7 @@ export const toolDefinitions = [
   },
   {
     name: 'gitlab_create_pipeline_schedule',
-    description: 'Create a new pipeline schedule for a project',
+    description: 'Create a new pipeline schedule for a project. Note: the response may include schedule variables whose values are returned as-is; schedule variables carry no masked flag, so masked-variable redaction does not apply to them',
     inputSchema: {
       type: 'object',
       properties: {
@@ -2118,7 +2118,7 @@ export const toolDefinitions = [
   },
   {
     name: 'gitlab_update_pipeline_schedule',
-    description: 'Update an existing pipeline schedule',
+    description: 'Update an existing pipeline schedule. Note: the response may include schedule variables whose values are returned as-is; schedule variables carry no masked flag, so masked-variable redaction does not apply to them',
     inputSchema: {
       type: 'object',
       properties: {
