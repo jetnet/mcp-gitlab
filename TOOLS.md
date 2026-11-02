@@ -1428,7 +1428,7 @@ List bridge jobs (downstream pipeline triggers) for a pipeline
 
 ### gitlab_list_pipeline_schedules
 
-List all pipeline schedules for a project. Warning: schedule variables values are returned as-is; schedule variables carry no masked flag, so masked-variable redaction does not apply to them
+List all pipeline schedules for a project. Warning: the response may include schedule variables whose values are returned as-is; schedule variables carry no masked flag, so masked-variable redaction does not apply to them
 
 **Parameters:**
 
@@ -1441,7 +1441,7 @@ List all pipeline schedules for a project. Warning: schedule variables values ar
 
 ### gitlab_get_pipeline_schedule
 
-Get details of a single pipeline schedule. Warning: schedule variables values are returned as-is; schedule variables carry no masked flag, so masked-variable redaction does not apply to them
+Get details of a single pipeline schedule. Warning: schedule variable values are returned as-is; schedule variables carry no masked flag, so masked-variable redaction does not apply to them
 
 **Parameters:**
 
