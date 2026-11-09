@@ -31,7 +31,7 @@ export function handleApiError(error: unknown, defaultMessage: string): McpError
   if (axios.isAxiosError(error)) {
     return new McpError(
       ErrorCode.InternalError,
-      `GitLab API error: ${error.response?.data?.message || error.message}`
+      `GitLab API error (HTTP ${error.response?.status}): ${JSON.stringify(error.response?.data?.message ?? error.message)}`
     );
   }
   if (error instanceof Error) {
